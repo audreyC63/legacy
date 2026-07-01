@@ -1,62 +1,40 @@
 "use client";
 
-import Card from "@/components/ui/Card";
 import PageHeader from "@/components/ui/PageHeader";
 import { useFamily } from "@/providers/FamilyProvider";
+import ChildHeroCard from "@/features/dashboard/components/ChildHeroCard";
+import QuickActionsGrid from "@/features/dashboard/components/QuickActionsGrid";
+import TodayCard from "@/features/dashboard/components/TodayCard";
+import LatestEventsCard from "@/features/dashboard/components/LatestEventsCard";
 
 export default function DashboardPage() {
   const { family } = useFamily();
 
-  const parents =
+  const welcome =
     family.motherOne && family.motherTwo
-      ? `${family.motherOne} & ${family.motherTwo}`
-      : "Votre famille";
-
-  const childName = family.childName || "Votre enfant";
+      ? `Bonjour ${family.motherOne} & ${family.motherTwo} ❤️`
+      : "Bienvenue ❤️";
 
   return (
     <main className="min-h-screen bg-[#F8F6F2]">
-      <div className="mx-auto flex max-w-md flex-col px-6 py-10">
+      <div className="mx-auto flex max-w-md flex-col gap-6 px-6 py-10">
         <PageHeader
           title="Legacy"
-          subtitle={`Bienvenue ${parents} ❤️`}
+          subtitle={welcome}
         />
 
-        <Card>
-          <p className="text-sm text-gray-500">Livre de vie</p>
+        <ChildHeroCard
+          childName={family.childName}
+          isBorn={family.isBorn}
+          birthDate={family.birthDate}
+          pregnancyDate={family.pregnancyDate}
+        />
 
-          <h2 className="mt-2 text-3xl font-bold text-[#2F2F2F]">
-            {childName}
-          </h2>
+        <QuickActionsGrid />
 
-          <p className="mt-4 text-[#6B6B6B]">
-            {family.isBorn === false
-              ? "Votre histoire commence avant votre rencontre."
-              : "Votre histoire commence ici."}
-          </p>
-        </Card>
+        <TodayCard isBorn={family.isBorn} />
 
-        <div className="mt-6 grid grid-cols-2 gap-4">
-          <Card>
-            <p className="text-2xl">❤️</p>
-            <p className="mt-2 font-semibold">Souvenir</p>
-          </Card>
-
-          <Card>
-            <p className="text-2xl">📸</p>
-            <p className="mt-2 font-semibold">Photo</p>
-          </Card>
-
-          <Card>
-            <p className="text-2xl">📈</p>
-            <p className="mt-2 font-semibold">Croissance</p>
-          </Card>
-
-          <Card>
-            <p className="text-2xl">🩺</p>
-            <p className="mt-2 font-semibold">Santé</p>
-          </Card>
-        </div>
+        <LatestEventsCard />
       </div>
     </main>
   );

@@ -1,0 +1,24 @@
+import Card from "@/components/ui/Card";
+
+type TodayCardProps = {
+  isBorn: boolean | null;
+};
+
+export default function TodayCard({ isBorn }: TodayCardProps) {
+  return (
+    <Card>
+      <p className="text-sm text-gray-500">Aujourd'hui</p>
+
+      <h3 className="mt-2 text-xl font-semibold text-[#2F2F2F]">
+        {isBorn === false
+          ? "Votre histoire commence déjà."
+          : "Un nouveau souvenir peut commencer aujourd'hui."}
+      </h3>
+
+      <p className="mt-3 text-[#6B6B6B]">
+        Legacy gardera les moments importants, les photos, la santé et les
+        grandes étapes au même endroit.
+      </p>
+    </Card>
+  );
+}
