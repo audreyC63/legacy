@@ -6,6 +6,7 @@ import ChildHeroCard from "@/features/dashboard/components/ChildHeroCard";
 import QuickActionsGrid from "@/features/dashboard/components/QuickActionsGrid";
 import TodayCard from "@/features/dashboard/components/TodayCard";
 import LatestEventsCard from "@/features/dashboard/components/LatestEventsCard";
+import RecentEventsCard from "@/features/dashboard/components/RecentEventsCard";
 
 export default function DashboardPage() {
   const { family } = useFamily();
@@ -34,7 +35,9 @@ export default function DashboardPage() {
 
         <TodayCard isBorn={family.isBorn} />
 
-        <LatestEventsCard />
+       <RecentEventsCard
+         events={family.events ?? []}
+       />
       </div>
     </main>
   );
