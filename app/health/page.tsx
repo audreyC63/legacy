@@ -1,5 +1,7 @@
 import PageHeader from "@/components/ui/PageHeader";
 import HealthForm from "@/features/health/components/HealthForm";
+import HealthHistory from "@/features/health/components/HealthHistory";
+import BottomNavigation from "@/components/navigation/BottomNavigation";
 
 export default function HealthPage() {
   return (
@@ -11,7 +13,9 @@ export default function HealthPage() {
         />
 
         <HealthForm />
+        <HealthHistory />
       </div>
+      <BottomNavigation />
     </main>
   );
 }
