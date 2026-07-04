@@ -8,6 +8,7 @@ import TodayCard from "@/features/dashboard/components/TodayCard";
 import LatestEventsCard from "@/features/dashboard/components/LatestEventsCard";
 import RecentEventsCard from "@/features/dashboard/components/RecentEventsCard";
 import BottomNavigation from "@/components/navigation/BottomNavigation";
+import ChildSummaryCard from "@/features/dashboard/components/ChildSummaryCard";
 
 export default function DashboardPage() {
   const { family } = useFamily();
@@ -24,6 +25,8 @@ export default function DashboardPage() {
           title="Legacy"
           subtitle={welcome}
         />
+
+        <ChildSummaryCard />
 
         <ChildHeroCard
           childName={family.childName}
