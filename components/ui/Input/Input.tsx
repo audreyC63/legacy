@@ -1,10 +1,3 @@
-/**
- * ------------------------------------------------------------------
- * Legacy
- * UI - Input
- * ------------------------------------------------------------------
- */
-
 type InputProps = {
   value: string;
   onChange: (value: string) => void;
@@ -24,7 +17,7 @@ export default function Input({
       value={value}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
-      className="w-full rounded-2xl border border-gray-300 bg-white p-4 outline-none transition focus:border-[#7C9A7A]"
+      className="w-full rounded-2xl border border-gray-300 bg-white p-4 text-[#2F2F2F] placeholder:text-gray-400 outline-none transition focus:border-[#7C9A7A]"
     />
   );
 }
