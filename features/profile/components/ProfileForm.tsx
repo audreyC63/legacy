@@ -1,77 +1,97 @@
 "use client";
 
-import { useState } from "react";
-
 import Card from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
+import { useFamily } from "@/providers/FamilyProvider";
 
 export default function ProfileForm() {
-  const [firstName, setFirstName] = useState("");
-  const [birthDate, setBirthDate] = useState("");
-  const [birthPlace, setBirthPlace] = useState("");
-  const [birthWeight, setBirthWeight] = useState("");
-  const [birthHeight, setBirthHeight] = useState("");
-  const [bloodGroup, setBloodGroup] = useState("");
-  const [eyeColor, setEyeColor] = useState("");
-  const [hairColor, setHairColor] = useState("");
+  const { family, setFamily } = useFamily();
+
+  function updateField(field: string, value: string) {
+    setFamily((current) => ({
+      ...current,
+      [field]: value,
+    }));
+  }
+
+  function handlePhoto(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onloadend = () => {
+      updateField("profilePhoto", reader.result as string);
+    };
+
+    reader.readAsDataURL(file);
+  }
 
   return (
     <Card>
-      <h2 className="text-xl font-semibold">
-        Profil de l'enfant
-      </h2>
+      <h2 className="text-xl font-semibold">Profil de l'enfant</h2>
 
       <div className="mt-5 space-y-4">
+        {family.profilePhoto && (
+          <img
+            src={family.profilePhoto}
+            alt="Photo de profil"
+            className="h-32 w-32 rounded-full object-cover"
+          />
+        )}
+
+        <input type="file" accept="image/*" onChange={handlePhoto} />
+
         <Input
           placeholder="Prénom"
-          value={firstName}
-          onChange={setFirstName}
+          value={family.childName}
+          onChange={(value) => updateField("childName", value)}
         />
 
         <Input
           type="date"
-          value={birthDate}
-          onChange={setBirthDate}
+          value={family.birthDate}
+          onChange={(value) => updateField("birthDate", value)}
         />
 
         <Input
           placeholder="Lieu de naissance"
-          value={birthPlace}
-          onChange={setBirthPlace}
+          value={family.birthPlace ?? ""}
+          onChange={(value) => updateField("birthPlace", value)}
         />
 
         <Input
           placeholder="Poids de naissance (kg)"
-          value={birthWeight}
-          onChange={setBirthWeight}
+          value={family.birthWeight ?? ""}
+          onChange={(value) => updateField("birthWeight", value)}
         />
 
         <Input
           placeholder="Taille de naissance (cm)"
-          value={birthHeight}
-          onChange={setBirthHeight}
+          value={family.birthHeight ?? ""}
+          onChange={(value) => updateField("birthHeight", value)}
         />
 
         <Input
           placeholder="Groupe sanguin"
-          value={bloodGroup}
-          onChange={setBloodGroup}
+          value={family.bloodGroup ?? ""}
+          onChange={(value) => updateField("bloodGroup", value)}
         />
 
         <Input
           placeholder="Couleur des yeux"
-          value={eyeColor}
-          onChange={setEyeColor}
+          value={family.eyeColor ?? ""}
+          onChange={(value) => updateField("eyeColor", value)}
         />
 
         <Input
           placeholder="Couleur des cheveux"
-          value={hairColor}
-          onChange={setHairColor}
+          value={family.hairColor ?? ""}
+          onChange={(value) => updateField("hairColor", value)}
         />
 
-        <Button onClick={() => alert("Le profil sera sauvegardé dans la prochaine étape.")}>
+        <Button onClick={() => alert("Profil sauvegardé")}>
           Enregistrer
         </Button>
       </div>

@@ -6,8 +6,34 @@ import { useFamily } from "@/providers/FamilyProvider";
 export default function ChildSummaryCard() {
   const { family } = useFamily();
 
-  const growth = [...(family.events ?? [])]
+  const events = family.events ?? [];
+
+  const latestMemory = [...events]
+    .filter((event) => event.type === "memory")
+    .sort(
+      (a, b) =>
+        new Date(b.date).getTime() -
+        new Date(a.date).getTime()
+    )[0];
+
+  const latestPhoto = [...events]
+    .filter((event) => event.type === "photo")
+    .sort(
+      (a, b) =>
+        new Date(b.date).getTime() -
+        new Date(a.date).getTime()
+    )[0];
+
+  const latestGrowth = [...events]
     .filter((event) => event.type === "growth")
+    .sort(
+      (a, b) =>
+        new Date(b.date).getTime() -
+        new Date(a.date).getTime()
+    )[0];
+
+  const latestHealth = [...events]
+    .filter((event) => event.type === "health")
     .sort(
       (a, b) =>
         new Date(b.date).getTime() -
@@ -26,16 +52,62 @@ export default function ChildSummaryCard() {
             {family.childName || "Votre enfant"}
           </h2>
 
-          {growth ? (
-            <p className="mt-2 whitespace-pre-line text-sm text-[#6B6B6B]">
-              {growth.description}
-            </p>
-          ) : (
-            <p className="mt-2 text-sm text-[#6B6B6B]">
-              Aucune mesure enregistrée.
-            </p>
-          )}
+          <p className="text-sm text-gray-500">
+            Livre de vie
+          </p>
         </div>
+      </div>
+
+      <div className="mt-8 space-y-4">
+
+        <div className="rounded-xl bg-[#F8F6F2] p-4">
+          <p className="font-semibold">
+            ❤️ Dernier souvenir
+          </p>
+
+          <p className="mt-2 text-sm">
+            {latestMemory
+              ? latestMemory.title
+              : "Aucun souvenir"}
+          </p>
+        </div>
+
+        <div className="rounded-xl bg-[#F8F6F2] p-4">
+          <p className="font-semibold">
+            📸 Dernière photo
+          </p>
+
+          <p className="mt-2 text-sm">
+            {latestPhoto
+              ? latestPhoto.title
+              : "Aucune photo"}
+          </p>
+        </div>
+
+        <div className="rounded-xl bg-[#F8F6F2] p-4">
+          <p className="font-semibold">
+            📈 Dernière mesure
+          </p>
+
+          <p className="mt-2 whitespace-pre-line text-sm">
+            {latestGrowth
+              ? latestGrowth.description
+              : "Aucune mesure"}
+          </p>
+        </div>
+
+        <div className="rounded-xl bg-[#F8F6F2] p-4">
+          <p className="font-semibold">
+            🩺 Dernier suivi santé
+          </p>
+
+          <p className="mt-2 text-sm">
+            {latestHealth
+              ? latestHealth.title
+              : "Aucun événement"}
+          </p>
+        </div>
+
       </div>
     </Card>
   );

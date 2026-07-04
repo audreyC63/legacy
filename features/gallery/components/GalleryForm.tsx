@@ -15,18 +15,20 @@ export default function GalleryForm() {
   const [title, setTitle] = useState("");
   const [date, setDate] = useState("");
   const [description, setDescription] = useState("");
-  const [preview, setPreview] = useState("");
+  const [image, setImage] = useState("");
 
-  function handleImage(
-    event: React.ChangeEvent<HTMLInputElement>
-  ) {
+  function handleImage(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
 
     if (!file) return;
 
-    const url = URL.createObjectURL(file);
+    const reader = new FileReader();
 
-    setPreview(url);
+    reader.onloadend = () => {
+      setImage(reader.result as string);
+    };
+
+    reader.readAsDataURL(file);
   }
 
   function savePhoto() {
@@ -38,7 +40,7 @@ export default function GalleryForm() {
         title: `📸 ${title}`,
         description,
         date: date || new Date().toISOString(),
-        images: preview ? [preview] : [],
+        images: image ? [image] : [],
         favorite: false,
       })
     );
@@ -46,37 +48,23 @@ export default function GalleryForm() {
     setTitle("");
     setDate("");
     setDescription("");
-    setPreview("");
+    setImage("");
   }
 
   return (
     <Card>
-      <h2 className="text-xl font-semibold">
-        Nouvelle photo
-      </h2>
+      <h2 className="text-xl font-semibold">Nouvelle photo</h2>
 
       <div className="mt-5 space-y-4">
-        <Input
-          placeholder="Titre"
-          value={title}
-          onChange={setTitle}
-        />
+        <Input placeholder="Titre" value={title} onChange={setTitle} />
 
-        <Input
-          type="date"
-          value={date}
-          onChange={setDate}
-        />
+        <Input type="date" value={date} onChange={setDate} />
 
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleImage}
-        />
+        <input type="file" accept="image/*" onChange={handleImage} />
 
-        {preview && (
+        {image && (
           <img
-            src={preview}
+            src={image}
             alt="Aperçu"
             className="h-48 w-full rounded-xl object-cover"
           />
@@ -89,9 +77,7 @@ export default function GalleryForm() {
           onChange={(e) => setDescription(e.target.value)}
         />
 
-        <Button onClick={savePhoto}>
-          Enregistrer
-        </Button>
+        <Button onClick={savePhoto}>Enregistrer</Button>
       </div>
     </Card>
   );
