@@ -20,7 +20,7 @@ export default function DashboardPage() {
 
   return (
     <main className="min-h-screen bg-[#F8F6F2]">
-      <div className="mx-auto flex max-w-md flex-col gap-6 px-6 py-10">
+      <div className="mx-auto flex max-w-md flex-col gap-6 px-6 pt-10 pb-56">
         <PageHeader
           title="Legacy"
           subtitle={welcome}

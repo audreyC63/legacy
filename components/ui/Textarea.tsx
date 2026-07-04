@@ -26,7 +26,7 @@ export default function Textarea({
         p-4
         text-base
         text-black
-        placeholder:text-gray-500
+        placeholder:text-black
         outline-none
         transition
         focus:border-[#7C9A7A]

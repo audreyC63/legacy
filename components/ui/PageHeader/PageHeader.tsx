@@ -13,7 +13,7 @@ export default function PageHeader({ title, subtitle }: PageHeaderProps) {
       </h1>
 
       {subtitle && (
-        <p className="mt-2 text-base leading-7 text-gray-700">
+        <p className="mt-2 text-base leading-7 text-black">
           {subtitle}
         </p>
       )}

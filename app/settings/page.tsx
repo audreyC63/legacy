@@ -1,18 +1,14 @@
 import PageHeader from "@/components/ui/PageHeader";
 import BottomNavigation from "@/components/navigation/BottomNavigation";
+import SettingsPanel from "@/features/settings/components/SettingsPanel";
 
-import ProfileForm from "@/features/profile/components/ProfileForm";
-
-export default function ProfilePage() {
+export default function SettingsPage() {
   return (
     <main className="min-h-screen bg-[#F8F6F2]">
       <div className="mx-auto flex max-w-md flex-col gap-6 px-6 py-10 pb-40">
-        <PageHeader
-          title="Profil"
-          subtitle="Informations de votre enfant"
-        />
+        <PageHeader title="Paramètres" subtitle="Gérer Legacy." />
 
-        <ProfileForm />
+        <SettingsPanel />
       </div>
 
       <BottomNavigation />
