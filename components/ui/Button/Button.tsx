@@ -1,22 +1,33 @@
-/**
- * ------------------------------------------------------------------
- * Legacy
- * UI - Button
- * ------------------------------------------------------------------
- * Bouton principal de l'application.
- * ------------------------------------------------------------------
- */
+import { ButtonHTMLAttributes } from "react";
 
-type ButtonProps = {
-  children: React.ReactNode;
-  onClick?: () => void;
-};
+type Props = ButtonHTMLAttributes<HTMLButtonElement>;
 
-export default function Button({ children, onClick }: ButtonProps) {
+export default function Button({
+  children,
+  className = "",
+  ...props
+}: Props) {
   return (
     <button
-      onClick={onClick}
-      className="w-full rounded-2xl bg-[#7C9A7A] py-4 text-lg font-semibold text-white transition hover:opacity-90"
+      {...props}
+      className={`
+        w-full
+        rounded-2xl
+        bg-[#7C9A7A]
+        px-5
+        py-3
+        font-semibold
+        text-white
+        shadow-sm
+        transition-all
+        duration-200
+        hover:bg-[#6D8B6B]
+        hover:shadow-md
+        active:scale-[0.98]
+        disabled:cursor-not-allowed
+        disabled:opacity-50
+        ${className}
+      `}
     >
       {children}
     </button>

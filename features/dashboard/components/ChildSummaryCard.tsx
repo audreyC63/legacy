@@ -44,7 +44,7 @@ export default function ChildSummaryCard() {
             {family.childName || "Votre enfant"}
           </h2>
 
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-black">
             {family.birthPlace ? `Né(e) à ${family.birthPlace}` : "Livre de vie"}
           </p>
         </div>

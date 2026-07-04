@@ -5,6 +5,7 @@ import { useState } from "react";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import Input from "@/components/ui/Input";
+import Textarea from "@/components/ui/Textarea";
 
 import { useFamily } from "@/providers/FamilyProvider";
 import { addEvent, deleteEvent, toggleFavorite } from "@/services/events";
@@ -23,13 +24,7 @@ export default function AddMemoryForm() {
       setFamily((current) => ({
         ...current,
         events: current.events.map((event) =>
-          event.id === editingId
-            ? {
-                ...event,
-                title,
-                description,
-              }
-            : event
+          event.id === editingId ? { ...event, title, description } : event
         ),
       }));
 
@@ -58,18 +53,17 @@ export default function AddMemoryForm() {
   return (
     <>
       <Card>
-        <h2 className="text-2xl font-semibold">
+        <h2 className="text-2xl font-semibold text-black">
           {editingId ? "Modifier le souvenir" : "Ajouter un souvenir"}
         </h2>
 
         <div className="mt-6 space-y-4">
           <Input value={title} onChange={setTitle} placeholder="Titre" />
 
-          <textarea
+          <Textarea
             value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            onChange={setDescription}
             placeholder="Racontez ce moment..."
-            className="min-h-32 w-full rounded-2xl border border-gray-300 p-4"
           />
         </div>
 
@@ -81,20 +75,22 @@ export default function AddMemoryForm() {
       </Card>
 
       <Card>
-        <h2 className="text-xl font-semibold">Souvenirs enregistrés</h2>
+        <h2 className="text-xl font-semibold text-black">
+          Souvenirs enregistrés
+        </h2>
 
         <div className="mt-4 space-y-4">
           {memories.length === 0 ? (
-            <p>Aucun souvenir.</p>
+            <p className="text-black">Aucun souvenir.</p>
           ) : (
             memories.map((memory) => (
               <div key={memory.id} className="border-b border-gray-100 pb-4">
-                <p className="font-semibold">
+                <p className="font-semibold text-black">
                   {memory.favorite ? "⭐ " : ""}
                   {memory.title}
                 </p>
 
-                <p className="mt-1 text-sm text-gray-600">
+                <p className="mt-1 text-sm text-black">
                   {memory.description}
                 </p>
 

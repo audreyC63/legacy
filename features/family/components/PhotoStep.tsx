@@ -17,7 +17,7 @@ export default function PhotoStep() {
       </p>
 
       <label className="mt-8 flex h-40 w-full cursor-pointer items-center justify-center rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50">
-        <span className="text-gray-500">
+        <span className="text-black">
           Cliquez pour choisir une photo
         </span>
 

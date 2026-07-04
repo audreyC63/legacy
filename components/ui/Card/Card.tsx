@@ -1,19 +1,26 @@
-/**
- * ------------------------------------------------------------------
- * Legacy
- * UI - Card
- * ------------------------------------------------------------------
- * Carte réutilisable dans toute l'application.
- * ------------------------------------------------------------------
- */
+import { ReactNode } from "react";
 
-type CardProps = {
-  children: React.ReactNode;
+type Props = {
+  children: ReactNode;
+  className?: string;
 };
 
-export default function Card({ children }: CardProps) {
+export default function Card({
+  children,
+  className = "",
+}: Props) {
   return (
-    <div className="rounded-3xl bg-white p-6 shadow-md">
+    <div
+      className={`
+        rounded-3xl
+        border
+        border-gray-200
+        bg-white
+        p-6
+        shadow-sm
+        ${className}
+      `}
+    >
       {children}
     </div>
   );

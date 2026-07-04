@@ -26,7 +26,7 @@ export default function GalleryHistory() {
         </h2>
 
         {photos.length === 0 ? (
-          <p className="mt-4 text-gray-500">
+          <p className="mt-4 text-black">
             Aucune photo enregistrée.
           </p>
         ) : (
@@ -57,7 +57,7 @@ export default function GalleryHistory() {
                     {photo.title}
                   </p>
 
-                  <p className="mt-1 text-xs text-gray-500">
+                  <p className="mt-1 text-xs text-black">
                     {new Date(photo.date).toLocaleDateString("fr-FR")}
                   </p>
                 </div>

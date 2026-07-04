@@ -22,7 +22,7 @@ export default function GrowthHistory() {
 
       <div className="mt-5 space-y-4">
         {events.length === 0 ? (
-          <p className="text-gray-500">
+          <p className="text-black">
             Aucune mesure enregistrée.
           </p>
         ) : (
@@ -35,7 +35,7 @@ export default function GrowthHistory() {
                 {event.title}
               </p>
 
-              <p className="mt-1 whitespace-pre-line text-sm text-gray-600">
+              <p className="mt-1 whitespace-pre-line text-sm text-black">
                 {event.description}
               </p>
 

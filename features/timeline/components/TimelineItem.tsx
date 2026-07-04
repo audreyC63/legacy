@@ -43,7 +43,7 @@ export default function TimelineItem({ event }: Props) {
           <div className="text-3xl">{style.icon}</div>
 
           <div className="flex-1">
-            <p className="text-xs font-semibold text-gray-500">
+            <p className="text-xs font-semibold text-black">
               {style.label} • {new Date(event.date).toLocaleDateString("fr-FR")}
             </p>
 

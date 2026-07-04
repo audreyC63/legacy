@@ -14,7 +14,7 @@ export default function Home() {
         />
 
         <Card>
-          <p className="text-sm text-gray-500">Bienvenue</p>
+          <p className="text-sm text-black">Bienvenue</p>
 
           <h2 className="mt-2 text-2xl font-semibold text-[#2F2F2F]">
            Bienvenue dans Legacy

@@ -6,7 +6,7 @@ import Card from "@/components/ui/Card";
 export default function FamilySetupCard() {
   return (
     <Card>
-      <p className="text-sm text-gray-500">
+      <p className="text-sm text-black">
         Première configuration
       </p>
 

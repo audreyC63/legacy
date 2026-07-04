@@ -16,7 +16,7 @@ const events = [
 export default function LatestEventsCard() {
   return (
     <Card>
-      <p className="text-sm text-gray-500">Derniers événements</p>
+      <p className="text-sm text-black">Derniers événements</p>
 
       <div className="mt-4 space-y-4">
         {events.map((event) => (

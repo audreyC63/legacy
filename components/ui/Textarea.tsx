@@ -1,19 +1,19 @@
-type InputProps = {
+type TextareaProps = {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
-  type?: string;
+  rows?: number;
 };
 
-export default function Input({
+export default function Textarea({
   value,
   onChange,
   placeholder,
-  type = "text",
-}: InputProps) {
+  rows = 5,
+}: TextareaProps) {
   return (
-    <input
-      type={type}
+    <textarea
+      rows={rows}
       value={value}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
@@ -25,12 +25,13 @@ export default function Input({
         bg-white
         p-4
         text-base
-        text-gray-900
-        placeholder:text-gray-400
+        text-black
+        placeholder:text-gray-500
+        outline-none
+        transition
         focus:border-[#7C9A7A]
         focus:ring-2
         focus:ring-[#7C9A7A]/20
-        outline-none
       "
     />
   );

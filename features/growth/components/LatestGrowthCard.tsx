@@ -21,7 +21,7 @@ export default function LatestGrowthCard() {
           Dernière mesure
         </h2>
 
-        <p className="mt-4 text-gray-500">
+        <p className="mt-4 text-black">
           Aucune mesure enregistrée.
         </p>
       </Card>

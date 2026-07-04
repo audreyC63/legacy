@@ -27,7 +27,7 @@ export default function ChildHeroCard({
         </div>
 
         <div>
-          <p className="text-sm text-gray-500">Livre de vie</p>
+          <p className="text-sm text-black">Livre de vie</p>
 
           <h2 className="mt-1 text-3xl font-bold text-[#2F2F2F]">
             {childName || "Votre enfant"}

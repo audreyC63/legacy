@@ -15,7 +15,7 @@ export default function BottomNavigation() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-gray-200 bg-white">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 bg-white/95 backdrop-blur">
       <div className="mx-auto flex max-w-md justify-around px-2 py-2">
         {items.map((item) => {
           const active = pathname === item.href;
@@ -24,8 +24,10 @@ export default function BottomNavigation() {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex flex-col items-center text-[11px] ${
-                active ? "font-semibold text-[#7C9A7A]" : "text-gray-500"
+              className={`flex flex-col items-center gap-1 rounded-2xl px-2 py-1 text-[11px] transition ${
+                active
+                  ? "bg-[#EDF5EC] font-semibold text-[#5E7A5B]"
+                  : "text-gray-600"
               }`}
             >
               <span className="text-xl">{item.icon}</span>
