@@ -10,6 +10,18 @@ import Textarea from "@/components/ui/Textarea";
 import { useFamily } from "@/providers/FamilyProvider";
 import { addEvent } from "@/services/events";
 
+function toIsoDate(date: string, time: string) {
+  const [day, month, year] = date.split("/");
+
+  if (!day || !month || !year) {
+    return new Date().toISOString();
+  }
+
+  return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}T${
+    time || "00:00"
+  }:00`;
+}
+
 export default function HealthForm() {
   const { family, setFamily } = useFamily();
 
@@ -41,7 +53,7 @@ export default function HealthForm() {
         type: "health",
         title,
         description,
-        date: date || new Date().toISOString(),
+        date: date ? toIsoDate(date, time) : new Date().toISOString(),
         images: [],
         favorite: false,
       })
@@ -62,47 +74,21 @@ export default function HealthForm() {
       </h2>
 
       <div className="mt-6 space-y-5">
+        <Input value={temperature} onChange={setTemperature} placeholder="Température (ex : 38.7)" />
+        <Input value={medicine} onChange={setMedicine} placeholder="Médicament" />
+        <Input value={dose} onChange={setDose} placeholder="Dose (ex : 5 ml)" />
+
         <Input
-          value={temperature}
-          onChange={setTemperature}
-          placeholder="Température (ex : 38.7)"
+          value={date}
+          onChange={setDate}
+          placeholder="Date (JJ/MM/AAAA)"
         />
 
         <Input
-          value={medicine}
-          onChange={setMedicine}
-          placeholder="Médicament"
+          value={time}
+          onChange={setTime}
+          placeholder="Heure (ex : 14:30)"
         />
-
-        <Input
-          value={dose}
-          onChange={setDose}
-          placeholder="Dose (ex : 5 ml)"
-        />
-
-        <div>
-          <label className="mb-2 block font-semibold text-black">
-            📅 Date
-          </label>
-
-          <Input
-            type="date"
-            value={date}
-            onChange={setDate}
-          />
-        </div>
-
-        <div>
-          <label className="mb-2 block font-semibold text-black">
-            🕒 Heure
-          </label>
-
-          <Input
-            type="time"
-            value={time}
-            onChange={setTime}
-          />
-        </div>
 
         <Textarea
           value={notes}
@@ -110,9 +96,7 @@ export default function HealthForm() {
           placeholder="Notes, symptômes, évolution..."
         />
 
-        <Button onClick={handleSave}>
-          Enregistrer
-        </Button>
+        <Button onClick={handleSave}>Enregistrer</Button>
       </div>
     </Card>
   );
