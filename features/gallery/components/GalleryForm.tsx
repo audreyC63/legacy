@@ -49,16 +49,15 @@ export default function GalleryForm({ editingEvent, onDone }: Props) {
   function savePhoto() {
     if (!title.trim()) return;
 
-    if (editingEvent) {
-      setFamily((current) =>
-        updateEvent(current, editingEvent.id, {
-          title: `📸 ${title}`,
-          description,
-          date: date || editingEvent.date,
-          images: image ? [image] : [],
-        })
-      );
+    const payload = {
+      title: `📸 ${title}`,
+      description,
+      date: date || new Date().toISOString(),
+      images: image ? [image] : [],
+    };
 
+    if (editingEvent) {
+      setFamily((current) => updateEvent(current, editingEvent.id, payload));
       onDone?.();
       return;
     }
@@ -66,10 +65,7 @@ export default function GalleryForm({ editingEvent, onDone }: Props) {
     setFamily((current) =>
       addEvent(current, {
         type: "photo",
-        title: `📸 ${title}`,
-        description,
-        date: date || new Date().toISOString(),
-        images: image ? [image] : [],
+        ...payload,
         favorite: false,
       })
     );
@@ -91,7 +87,22 @@ export default function GalleryForm({ editingEvent, onDone }: Props) {
 
         <Input type="date" value={date} onChange={setDate} />
 
-        <input type="file" accept="image/*" onChange={handleImage} />
+        <label className="flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[#7C9A7A] bg-[#EDF5EC] p-6 text-center">
+          <span className="text-4xl">📸</span>
+          <span className="mt-2 font-semibold text-black">
+            Ajouter une photo
+          </span>
+          <span className="mt-1 text-sm text-gray-700">
+            Touchez ici pour choisir une image
+          </span>
+
+          <input
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={handleImage}
+          />
+        </label>
 
         {image && (
           <img

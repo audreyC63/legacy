@@ -23,8 +23,8 @@ export default function SettingsPanel() {
       isBorn: null,
       birthDate: "",
       pregnancyDate: "",
-      motherOne: "",
-      motherTwo: "",
+      parentOne: "",
+      parentTwo: "",
       events: [],
     });
 

@@ -5,6 +5,7 @@ import { useState } from "react";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import Input from "@/components/ui/Input";
+import Textarea from "@/components/ui/Textarea";
 
 import { useFamily } from "@/providers/FamilyProvider";
 import { addEvent } from "@/services/events";
@@ -16,6 +17,20 @@ export default function MedicalDocumentForm() {
   const [doctor, setDoctor] = useState("");
   const [documentDate, setDocumentDate] = useState("");
   const [notes, setNotes] = useState("");
+  const [image, setImage] = useState("");
+
+  function handleDocumentPhoto(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onloadend = () => {
+      setImage(reader.result as string);
+    };
+
+    reader.readAsDataURL(file);
+  }
 
   function saveDocument() {
     if (!title.trim()) return;
@@ -32,7 +47,7 @@ export default function MedicalDocumentForm() {
           .filter(Boolean)
           .join("\n"),
         date: documentDate || new Date().toISOString(),
-        images: [],
+        images: image ? [image] : [],
         favorite: false,
       })
     );
@@ -41,13 +56,12 @@ export default function MedicalDocumentForm() {
     setDoctor("");
     setDocumentDate("");
     setNotes("");
+    setImage("");
   }
 
   return (
     <Card>
-      <h2 className="text-xl font-semibold">
-        Document médical
-      </h2>
+      <h2 className="text-xl font-semibold text-black">Document médical</h2>
 
       <div className="mt-5 space-y-4">
         <Input
@@ -62,22 +76,36 @@ export default function MedicalDocumentForm() {
           onChange={setDoctor}
         />
 
-        <Input
-          type="date"
-          value={documentDate}
-          onChange={setDocumentDate}
-        />
+        <Input type="date" value={documentDate} onChange={setDocumentDate} />
 
-        <textarea
-          className="min-h-28 w-full rounded-xl border border-gray-300 p-4"
-          placeholder="Notes"
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
-        />
+        <label className="flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[#7C9A7A] bg-[#EDF5EC] p-6 text-center">
+          <span className="text-4xl">📄</span>
+          <span className="mt-2 font-semibold text-black">
+            Ajouter une photo du document
+          </span>
+          <span className="mt-1 text-sm text-gray-700">
+            Touchez ici pour choisir une image
+          </span>
 
-        <Button onClick={saveDocument}>
-          Enregistrer le document
-        </Button>
+          <input
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={handleDocumentPhoto}
+          />
+        </label>
+
+        {image && (
+          <img
+            src={image}
+            alt="Document médical"
+            className="h-48 w-full rounded-xl object-cover"
+          />
+        )}
+
+        <Textarea value={notes} onChange={setNotes} placeholder="Notes" />
+
+        <Button onClick={saveDocument}>Enregistrer le document</Button>
       </div>
     </Card>
   );

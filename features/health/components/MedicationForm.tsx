@@ -2,23 +2,25 @@
 
 import { useState } from "react";
 
-import Card from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
+import Card from "@/components/ui/Card";
 import Input from "@/components/ui/Input";
+import Textarea from "@/components/ui/Textarea";
 
 import { useFamily } from "@/providers/FamilyProvider";
 import { addEvent } from "@/services/events";
 
 export default function MedicationForm() {
-  const { family, setFamily } = useFamily();
+  const { setFamily } = useFamily();
 
   const [medicine, setMedicine] = useState("");
   const [dose, setDose] = useState("");
+  const [date, setDate] = useState("");
   const [hour, setHour] = useState("");
   const [notes, setNotes] = useState("");
 
   function saveMedication() {
-    if (!medicine) return;
+    if (!medicine.trim()) return;
 
     setFamily((current) =>
       addEvent(current, {
@@ -31,7 +33,7 @@ export default function MedicationForm() {
         ]
           .filter(Boolean)
           .join("\n"),
-        date: new Date().toISOString(),
+        date: date || new Date().toISOString(),
         images: [],
         favorite: false,
       })
@@ -39,15 +41,14 @@ export default function MedicationForm() {
 
     setMedicine("");
     setDose("");
+    setDate("");
     setHour("");
     setNotes("");
   }
 
   return (
     <Card>
-      <h2 className="text-xl font-semibold">
-        Médicament
-      </h2>
+      <h2 className="text-xl font-semibold text-black">Médicament</h2>
 
       <div className="mt-5 space-y-4">
         <Input
@@ -57,27 +58,18 @@ export default function MedicationForm() {
         />
 
         <Input
-          placeholder="Dose (5 ml)"
+          placeholder="Dose (ex : 5 ml)"
           value={dose}
           onChange={setDose}
         />
 
-        <Input
-          type="time"
-          value={hour}
-          onChange={setHour}
-        />
+        <Input type="date" value={date} onChange={setDate} />
 
-        <textarea
-          className="min-h-28 w-full rounded-xl border border-gray-300 p-4"
-          placeholder="Notes"
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
-        />
+        <Input type="time" value={hour} onChange={setHour} />
 
-        <Button onClick={saveMedication}>
-          Enregistrer le médicament
-        </Button>
+        <Textarea value={notes} onChange={setNotes} placeholder="Notes" />
+
+        <Button onClick={saveMedication}>Enregistrer le médicament</Button>
       </div>
     </Card>
   );

@@ -14,6 +14,7 @@ export default function AddMemoryForm() {
   const { family, setFamily } = useFamily();
 
   const [title, setTitle] = useState("");
+  const [date, setDate] = useState("");
   const [description, setDescription] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
 
@@ -24,7 +25,14 @@ export default function AddMemoryForm() {
       setFamily((current) => ({
         ...current,
         events: current.events.map((event) =>
-          event.id === editingId ? { ...event, title, description } : event
+          event.id === editingId
+            ? {
+                ...event,
+                title,
+                description,
+                date: date || event.date,
+              }
+            : event
         ),
       }));
 
@@ -35,7 +43,7 @@ export default function AddMemoryForm() {
           type: "memory",
           title,
           description,
-          date: new Date().toISOString(),
+          date: date || new Date().toISOString(),
           images: [],
           favorite: false,
         })
@@ -43,6 +51,7 @@ export default function AddMemoryForm() {
     }
 
     setTitle("");
+    setDate("");
     setDescription("");
   }
 
@@ -59,6 +68,8 @@ export default function AddMemoryForm() {
 
         <div className="mt-6 space-y-4">
           <Input value={title} onChange={setTitle} placeholder="Titre" />
+
+          <Input type="date" value={date} onChange={setDate} />
 
           <Textarea
             value={description}
@@ -90,6 +101,10 @@ export default function AddMemoryForm() {
                   {memory.title}
                 </p>
 
+                <p className="mt-1 text-xs text-gray-700">
+                  {new Date(memory.date).toLocaleDateString("fr-FR")}
+                </p>
+
                 <p className="mt-1 text-sm text-black">
                   {memory.description}
                 </p>
@@ -99,6 +114,7 @@ export default function AddMemoryForm() {
                     onClick={() => {
                       setEditingId(memory.id);
                       setTitle(memory.title);
+                      setDate(memory.date.split("T")[0]);
                       setDescription(memory.description);
                     }}
                   >
