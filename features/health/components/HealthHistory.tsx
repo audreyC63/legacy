@@ -6,7 +6,7 @@ import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 
 import { useFamily } from "@/providers/FamilyProvider";
-import { deleteEvent } from "@/services/events";
+import { deleteEvent, toggleFavorite } from "@/services/events";
 import { LegacyEvent } from "@/types/Event";
 
 import HealthEditForm from "./HealthEditForm";
@@ -17,18 +17,10 @@ export default function HealthHistory() {
 
   const events = (family.events ?? [])
     .filter((event) => event.type === "health")
-    .sort(
-      (a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    );
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
   if (editingEvent) {
-    return (
-      <HealthEditForm
-        event={editingEvent}
-        onDone={() => setEditingEvent(null)}
-      />
-    );
+    return <HealthEditForm event={editingEvent} onDone={() => setEditingEvent(null)} />;
   }
 
   return (
@@ -41,7 +33,10 @@ export default function HealthHistory() {
         ) : (
           events.map((event) => (
             <div key={event.id} className="border-b border-gray-100 pb-4">
-              <p className="font-semibold text-black">{event.title}</p>
+              <p className="font-semibold text-black">
+                {event.favorite ? "⭐ " : ""}
+                {event.title}
+              </p>
 
               <p className="mt-1 whitespace-pre-line text-sm text-black">
                 {event.description}
@@ -52,13 +47,13 @@ export default function HealthHistory() {
               </p>
 
               <div className="mt-3 space-y-2">
+                <Button onClick={() => setFamily((current) => toggleFavorite(current, event.id))}>
+                  {event.favorite ? "⭐ Retirer des favoris" : "☆ Ajouter aux favoris"}
+                </Button>
+
                 <Button onClick={() => setEditingEvent(event)}>Modifier</Button>
 
-                <Button
-                  onClick={() =>
-                    setFamily((current) => deleteEvent(current, event.id))
-                  }
-                >
+                <Button onClick={() => setFamily((current) => deleteEvent(current, event.id))}>
                   Supprimer
                 </Button>
               </div>

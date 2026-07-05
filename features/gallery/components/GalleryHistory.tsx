@@ -5,7 +5,7 @@ import { useState } from "react";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import { useFamily } from "@/providers/FamilyProvider";
-import { deleteEvent } from "@/services/events";
+import { deleteEvent, toggleFavorite } from "@/services/events";
 import { LegacyEvent } from "@/types/Event";
 
 type Props = {
@@ -30,43 +30,35 @@ export default function GalleryHistory({ onEdit }: Props) {
         ) : (
           <div className="mt-6 grid grid-cols-2 gap-4">
             {photos.map((photo) => (
-              <div
-                key={photo.id}
-                className="overflow-hidden rounded-2xl border border-gray-200 bg-white"
-              >
+              <div key={photo.id} className="overflow-hidden rounded-2xl border border-gray-200 bg-white">
                 <div
                   className="cursor-pointer"
-                  onClick={() =>
-                    photo.images.length > 0 && setSelectedImage(photo.images[0])
-                  }
+                  onClick={() => photo.images.length > 0 && setSelectedImage(photo.images[0])}
                 >
                   {photo.images.length > 0 ? (
-                    <img
-                      src={photo.images[0]}
-                      alt={photo.title}
-                      className="h-40 w-full object-cover"
-                    />
+                    <img src={photo.images[0]} alt={photo.title} className="h-40 w-full object-cover" />
                   ) : (
-                    <div className="flex h-40 items-center justify-center bg-gray-100 text-5xl">
-                      📷
-                    </div>
+                    <div className="flex h-40 items-center justify-center bg-gray-100 text-5xl">📷</div>
                   )}
                 </div>
 
                 <div className="space-y-2 p-3">
-                  <p className="font-semibold text-black">{photo.title}</p>
+                  <p className="font-semibold text-black">
+                    {photo.favorite ? "⭐ " : ""}
+                    {photo.title}
+                  </p>
 
                   <p className="text-xs text-gray-700">
                     {new Date(photo.date).toLocaleDateString("fr-FR")}
                   </p>
 
+                  <Button onClick={() => setFamily((current) => toggleFavorite(current, photo.id))}>
+                    {photo.favorite ? "⭐ Retirer des favoris" : "☆ Ajouter aux favoris"}
+                  </Button>
+
                   <Button onClick={() => onEdit(photo)}>Modifier</Button>
 
-                  <Button
-                    onClick={() =>
-                      setFamily((current) => deleteEvent(current, photo.id))
-                    }
-                  >
+                  <Button onClick={() => setFamily((current) => deleteEvent(current, photo.id))}>
                     Supprimer
                   </Button>
                 </div>
@@ -81,11 +73,7 @@ export default function GalleryHistory({ onEdit }: Props) {
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-6"
           onClick={() => setSelectedImage(null)}
         >
-          <img
-            src={selectedImage}
-            alt="Photo"
-            className="max-h-full max-w-full rounded-2xl"
-          />
+          <img src={selectedImage} alt="Photo" className="max-h-full max-w-full rounded-2xl" />
         </div>
       )}
     </>

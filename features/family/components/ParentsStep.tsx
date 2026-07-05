@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+
 import Card from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
@@ -11,29 +12,35 @@ export default function ParentsStep() {
 
   return (
     <Card>
-      <h2 className="text-2xl font-semibold text-[#2F2F2F]">
+      <h2 className="text-2xl font-semibold text-black">
         Parlons de votre famille
       </h2>
 
-      <p className="mt-2 text-[#6B6B6B]">
-        Renseignez le prénom des deux mamans.
+      <p className="mt-2 text-black">
+        Renseignez les personnes qui accompagneront votre enfant.
       </p>
 
       <div className="mt-8 space-y-4">
         <Input
-          value={family.motherOne}
+          value={family.parentOne}
           onChange={(value) =>
-            setFamily((current) => ({ ...current, motherOne: value }))
+            setFamily((current) => ({
+              ...current,
+              parentOne: value,
+            }))
           }
-          placeholder="Prénom de la première maman"
+          placeholder="Prénom du parent 1"
         />
 
         <Input
-          value={family.motherTwo}
+          value={family.parentTwo}
           onChange={(value) =>
-            setFamily((current) => ({ ...current, motherTwo: value }))
+            setFamily((current) => ({
+              ...current,
+              parentTwo: value,
+            }))
           }
-          placeholder="Prénom de la deuxième maman"
+          placeholder="Prénom du parent 2"
         />
       </div>
 

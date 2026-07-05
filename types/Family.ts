@@ -5,8 +5,10 @@ export interface Family {
   isBorn: boolean | null;
   birthDate: string;
   pregnancyDate: string;
-  motherOne: string;
-  motherTwo: string;
+
+  parentOne: string;
+  parentTwo: string;
+
   events: LegacyEvent[];
 
   profilePhoto?: string;

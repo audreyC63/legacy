@@ -18,22 +18,35 @@ type FamilyContextType = {
 
 const FamilyContext = createContext<FamilyContextType | null>(null);
 
+const initialFamily: Family = {
+  childName: "",
+  isBorn: null,
+  birthDate: "",
+  pregnancyDate: "",
+  parentOne: "",
+  parentTwo: "",
+  events: [],
+  profilePhoto: "",
+  birthPlace: "",
+  birthWeight: "",
+  birthHeight: "",
+  bloodGroup: "",
+  eyeColor: "",
+  hairColor: "",
+};
+
 export function FamilyProvider({ children }: { children: ReactNode }) {
-  const [family, setFamily] = useState<Family>({
-    childName: "",
-    isBorn: null,
-    birthDate: "",
-    pregnancyDate: "",
-    motherOne: "",
-    motherTwo: "",
-    events: [],
-  });
+  const [family, setFamily] = useState<Family>(initialFamily);
 
   useEffect(() => {
     const saved = loadFamily();
 
     if (saved) {
-      setFamily(saved);
+      setFamily({
+        ...initialFamily,
+        ...saved,
+        events: saved.events ?? [],
+      });
     }
   }, []);
 

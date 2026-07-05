@@ -2,7 +2,7 @@
 
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
-import { deleteEvent } from "@/services/events";
+import { deleteEvent, toggleFavorite } from "@/services/events";
 import { LegacyEvent } from "@/types/Event";
 import { useFamily } from "@/providers/FamilyProvider";
 
@@ -27,7 +27,10 @@ export default function GrowthHistory({ onEdit }: Props) {
         ) : (
           events.map((event) => (
             <div key={event.id} className="border-b border-gray-100 pb-4">
-              <p className="font-semibold text-black">{event.title}</p>
+              <p className="font-semibold text-black">
+                {event.favorite ? "⭐ " : ""}
+                {event.title}
+              </p>
 
               <p className="mt-1 whitespace-pre-line text-sm text-black">
                 {event.description}
@@ -38,13 +41,13 @@ export default function GrowthHistory({ onEdit }: Props) {
               </p>
 
               <div className="mt-3 space-y-2">
+                <Button onClick={() => setFamily((current) => toggleFavorite(current, event.id))}>
+                  {event.favorite ? "⭐ Retirer des favoris" : "☆ Ajouter aux favoris"}
+                </Button>
+
                 <Button onClick={() => onEdit(event)}>Modifier</Button>
 
-                <Button
-                  onClick={() =>
-                    setFamily((current) => deleteEvent(current, event.id))
-                  }
-                >
+                <Button onClick={() => setFamily((current) => deleteEvent(current, event.id))}>
                   Supprimer
                 </Button>
               </div>

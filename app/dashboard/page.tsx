@@ -14,8 +14,8 @@ export default function DashboardPage() {
   const { family } = useFamily();
 
   const welcome =
-    family.motherOne && family.motherTwo
-      ? `Bonjour ${family.motherOne} & ${family.motherTwo} ❤️`
+    family.parentOne && family.parentTwo
+      ? `Bonjour ${family.parentOne} & ${family.parentTwo} ❤️`
       : "Bienvenue ❤️";
 
   return (
