@@ -5,11 +5,18 @@ import { useState } from "react";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import Input from "@/components/ui/Input";
+import Textarea from "@/components/ui/Textarea";
 
 import { useFamily } from "@/providers/FamilyProvider";
-import { addEvent } from "@/services/events";
+import { addEvent, updateEvent } from "@/services/events";
+import { LegacyEvent } from "@/types/Event";
 
-export default function GrowthForm() {
+type Props = {
+  editingEvent?: LegacyEvent | null;
+  onDone?: () => void;
+};
+
+export default function GrowthForm({ editingEvent, onDone }: Props) {
   const { setFamily } = useFamily();
 
   const [weight, setWeight] = useState("");
@@ -19,20 +26,35 @@ export default function GrowthForm() {
   const [notes, setNotes] = useState("");
 
   function saveGrowth() {
-    if (!weight && !height && !head) return;
+    if (!weight && !height && !head && !editingEvent) return;
+
+    const description = [
+      weight && `Poids : ${weight} kg`,
+      height && `Taille : ${height} cm`,
+      head && `Périmètre crânien : ${head} cm`,
+      notes,
+    ]
+      .filter(Boolean)
+      .join("\n");
+
+    if (editingEvent) {
+      setFamily((current) =>
+        updateEvent(current, editingEvent.id, {
+          title: "📈 Nouvelle mesure",
+          description,
+          date: date || editingEvent.date,
+        })
+      );
+
+      onDone?.();
+      return;
+    }
 
     setFamily((current) =>
       addEvent(current, {
         type: "growth",
         title: "📈 Nouvelle mesure",
-        description: [
-          weight && `Poids : ${weight} kg`,
-          height && `Taille : ${height} cm`,
-          head && `Périmètre crânien : ${head} cm`,
-          notes,
-        ]
-          .filter(Boolean)
-          .join("\n"),
+        description,
         date: date || new Date().toISOString(),
         images: [],
         favorite: false,
@@ -48,44 +70,20 @@ export default function GrowthForm() {
 
   return (
     <Card>
-      <h2 className="text-xl font-semibold">
-        Nouvelle mesure
+      <h2 className="text-xl font-semibold text-black">
+        {editingEvent ? "Modifier la mesure" : "Nouvelle mesure"}
       </h2>
 
       <div className="mt-5 space-y-4">
-        <Input
-          placeholder="Poids (kg)"
-          value={weight}
-          onChange={setWeight}
-        />
+        <Input placeholder="Poids (kg)" value={weight} onChange={setWeight} />
+        <Input placeholder="Taille (cm)" value={height} onChange={setHeight} />
+        <Input placeholder="Périmètre crânien (cm)" value={head} onChange={setHead} />
+        <Input type="date" value={date} onChange={setDate} />
 
-        <Input
-          placeholder="Taille (cm)"
-          value={height}
-          onChange={setHeight}
-        />
-
-        <Input
-          placeholder="Périmètre crânien (cm)"
-          value={head}
-          onChange={setHead}
-        />
-
-        <Input
-          type="date"
-          value={date}
-          onChange={setDate}
-        />
-
-        <textarea
-          className="min-h-28 w-full rounded-xl border border-gray-300 p-4"
-          placeholder="Notes"
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
-        />
+        <Textarea value={notes} onChange={setNotes} placeholder="Notes" />
 
         <Button onClick={saveGrowth}>
-          Enregistrer la mesure
+          {editingEvent ? "Mettre à jour" : "Enregistrer la mesure"}
         </Button>
       </div>
     </Card>

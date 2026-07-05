@@ -1,15 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import Input from "@/components/ui/Input";
+import Textarea from "@/components/ui/Textarea";
 
 import { useFamily } from "@/providers/FamilyProvider";
-import { addEvent } from "@/services/events";
+import { addEvent, updateEvent } from "@/services/events";
+import { LegacyEvent } from "@/types/Event";
 
-export default function GalleryForm() {
+type Props = {
+  editingEvent?: LegacyEvent | null;
+  onDone?: () => void;
+};
+
+export default function GalleryForm({ editingEvent, onDone }: Props) {
   const { setFamily } = useFamily();
 
   const [title, setTitle] = useState("");
@@ -17,9 +24,17 @@ export default function GalleryForm() {
   const [description, setDescription] = useState("");
   const [image, setImage] = useState("");
 
+  useEffect(() => {
+    if (!editingEvent) return;
+
+    setTitle(editingEvent.title.replace("📸 ", ""));
+    setDescription(editingEvent.description);
+    setDate(editingEvent.date.split("T")[0]);
+    setImage(editingEvent.images[0] ?? "");
+  }, [editingEvent]);
+
   function handleImage(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
-
     if (!file) return;
 
     const reader = new FileReader();
@@ -33,6 +48,20 @@ export default function GalleryForm() {
 
   function savePhoto() {
     if (!title.trim()) return;
+
+    if (editingEvent) {
+      setFamily((current) =>
+        updateEvent(current, editingEvent.id, {
+          title: `📸 ${title}`,
+          description,
+          date: date || editingEvent.date,
+          images: image ? [image] : [],
+        })
+      );
+
+      onDone?.();
+      return;
+    }
 
     setFamily((current) =>
       addEvent(current, {
@@ -53,7 +82,9 @@ export default function GalleryForm() {
 
   return (
     <Card>
-      <h2 className="text-xl font-semibold">Nouvelle photo</h2>
+      <h2 className="text-xl font-semibold text-black">
+        {editingEvent ? "Modifier la photo" : "Nouvelle photo"}
+      </h2>
 
       <div className="mt-5 space-y-4">
         <Input placeholder="Titre" value={title} onChange={setTitle} />
@@ -70,14 +101,15 @@ export default function GalleryForm() {
           />
         )}
 
-        <textarea
-          className="min-h-28 w-full rounded-xl border border-gray-300 p-4"
-          placeholder="Description"
+        <Textarea
           value={description}
-          onChange={(e) => setDescription(e.target.value)}
+          onChange={setDescription}
+          placeholder="Description"
         />
 
-        <Button onClick={savePhoto}>Enregistrer</Button>
+        <Button onClick={savePhoto}>
+          {editingEvent ? "Mettre à jour" : "Enregistrer"}
+        </Button>
       </div>
     </Card>
   );
