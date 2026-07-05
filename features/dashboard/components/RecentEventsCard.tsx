@@ -26,7 +26,7 @@ export default function RecentEventsCard({ events }: Props) {
 
       <div className="mt-6 space-y-4">
         {latest.length === 0 ? (
-          <p className="text-[#6B6B6B]">
+          <p className="text-black">
             Aucun événement.
           </p>
         ) : (
@@ -36,7 +36,7 @@ export default function RecentEventsCard({ events }: Props) {
                 {event.title}
               </p>
 
-              <p className="text-sm text-[#6B6B6B]">
+              <p className="text-sm text-black">
                 {event.description}
               </p>
             </div>

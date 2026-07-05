@@ -11,7 +11,7 @@ export default function FormSection({
 }: Props) {
   return (
     <section className="rounded-3xl bg-white p-6 shadow-sm">
-      <h2 className="mb-6 text-xl font-semibold text-[#2F2F2F]">
+      <h2 className="mb-6 text-xl font-semibold text-black">
         {title}
       </h2>
 

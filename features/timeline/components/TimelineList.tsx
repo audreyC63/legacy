@@ -14,7 +14,7 @@ export default function TimelineList({ events }: Props) {
 
   if (sorted.length === 0) {
     return (
-      <p className="text-center text-[#6B6B6B]">
+      <p className="text-center text-black">
         Aucun événement.
       </p>
     );

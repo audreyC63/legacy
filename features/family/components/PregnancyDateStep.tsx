@@ -11,11 +11,11 @@ export default function PregnancyDateStep() {
 
   return (
     <Card>
-      <h2 className="text-2xl font-semibold text-[#2F2F2F]">
+      <h2 className="text-2xl font-semibold text-black">
         Quelle est la date prévue ?
       </h2>
 
-      <p className="mt-2 text-[#6B6B6B]">
+      <p className="mt-2 text-black">
         Legacy affichera le temps restant avant votre rencontre.
       </p>
 

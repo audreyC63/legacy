@@ -27,7 +27,7 @@ export default function BottomNavigation() {
               className={`flex flex-col items-center gap-1 rounded-2xl px-2 py-1 text-[11px] transition ${
                 active
                   ? "bg-[#EDF5EC] font-semibold text-[#5E7A5B]"
-                  : "text-gray-600"
+                  : "text-black"
               }`}
             >
               <span className="text-xl">{item.icon}</span>

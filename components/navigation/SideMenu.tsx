@@ -94,7 +94,7 @@ export default function SideMenu() {
               Bientôt
             </p>
 
-            <div className="space-y-2 text-gray-500">
+            <div className="space-y-2 text-black">
               <p>☁️ Synchronisation</p>
               <p>📤 Export PDF</p>
               <p>🔔 Notifications</p>
@@ -102,7 +102,7 @@ export default function SideMenu() {
           </nav>
 
           {/* Pied */}
-          <div className="border-t border-gray-200 p-6 text-center text-sm text-gray-500">
+          <div className="border-t border-gray-200 p-6 text-center text-sm text-black">
             Legacy V1 Beta
           </div>
         </aside>

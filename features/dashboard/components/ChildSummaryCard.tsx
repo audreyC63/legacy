@@ -40,7 +40,7 @@ export default function ChildSummaryCard() {
         )}
 
         <div>
-          <h2 className="text-2xl font-bold text-[#2F2F2F]">
+          <h2 className="text-2xl font-bold text-black">
             {family.childName || "Votre enfant"}
           </h2>
 

@@ -11,11 +11,11 @@ export default function ChildNameStep() {
 
   return (
     <Card>
-      <h2 className="text-2xl font-semibold text-[#2F2F2F]">
+      <h2 className="text-2xl font-semibold text-black">
         Quel est le prénom de votre enfant ?
       </h2>
 
-      <p className="mt-2 text-[#6B6B6B]">
+      <p className="mt-2 text-black">
         Vous pourrez le modifier plus tard.
       </p>
 

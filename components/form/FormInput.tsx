@@ -17,7 +17,7 @@ export default function FormInput({
 }: Props) {
   return (
     <div className="space-y-2">
-      <label className="text-sm font-medium text-[#2F2F2F]">
+      <label className="text-sm font-medium text-black">
         {label}
       </label>
 

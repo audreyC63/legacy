@@ -10,11 +10,11 @@ export default function FamilySetupCard() {
         Première configuration
       </p>
 
-      <h2 className="mt-2 text-2xl font-semibold text-[#2F2F2F]">
+      <h2 className="mt-2 text-2xl font-semibold text-black">
         Créons votre famille
       </h2>
 
-      <p className="mt-4 text-[#6B6B6B]">
+      <p className="mt-4 text-black">
         En quelques étapes, Legacy sera prêt à raconter votre histoire.
       </p>
 

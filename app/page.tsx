@@ -16,11 +16,11 @@ export default function Home() {
         <Card>
           <p className="text-sm text-black">Bienvenue</p>
 
-          <h2 className="mt-2 text-2xl font-semibold text-[#2F2F2F]">
+          <h2 className="mt-2 text-2xl font-semibold text-black">
            Bienvenue dans Legacy
          </h2>
 
-         <p className="mt-4 text-[#6B6B6B]">
+         <p className="mt-4 text-black">
            Créez le livre de vie de votre enfant et conservez chaque souvenir, chaque étape importante et chaque moment précieux, de la grossesse jusqu'à l'âge adulte.
          </p>
         </Card>

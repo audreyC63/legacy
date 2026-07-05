@@ -34,7 +34,7 @@ export default function LatestGrowthCard() {
         Dernière mesure
       </h2>
 
-      <p className="mt-4 whitespace-pre-line text-[#2F2F2F]">
+      <p className="mt-4 whitespace-pre-line text-black">
         {latest.description}
       </p>
 

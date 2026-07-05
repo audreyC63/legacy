@@ -24,8 +24,8 @@ export default function LatestEventsCard() {
             <div className="text-2xl">{event.icon}</div>
 
             <div>
-              <p className="font-semibold text-[#2F2F2F]">{event.title}</p>
-              <p className="text-sm text-[#6B6B6B]">{event.description}</p>
+              <p className="font-semibold text-black">{event.title}</p>
+              <p className="text-sm text-black">{event.description}</p>
             </div>
           </div>
         ))}

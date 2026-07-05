@@ -29,11 +29,11 @@ export default function ChildHeroCard({
         <div>
           <p className="text-sm text-black">Livre de vie</p>
 
-          <h2 className="mt-1 text-3xl font-bold text-[#2F2F2F]">
+          <h2 className="mt-1 text-3xl font-bold text-blacks">
             {childName || "Votre enfant"}
           </h2>
 
-          <p className="mt-1 text-[#6B6B6B]">{subtitle}</p>
+          <p className="mt-1 text-black">{subtitle}</p>
         </div>
       </div>
     </Card>
