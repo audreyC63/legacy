@@ -57,11 +57,11 @@ export default function HealthForm() {
 
   return (
     <Card>
-      <h2 className="text-2xl font-semibold text-black">
+      <h2 className="text-2xl font-bold text-black">
         Ajouter un suivi santé
       </h2>
 
-      <div className="mt-6 space-y-4">
+      <div className="mt-6 space-y-5">
         <Input
           value={temperature}
           onChange={setTemperature}
@@ -80,17 +80,29 @@ export default function HealthForm() {
           placeholder="Dose (ex : 5 ml)"
         />
 
-        <Input
-          type="date"
-          value={date}
-          onChange={setDate}
-        />
+        <div>
+          <label className="mb-2 block font-semibold text-black">
+            📅 Date
+          </label>
 
-        <Input
-          type="time"
-          value={time}
-          onChange={setTime}
-        />
+          <Input
+            type="date"
+            value={date}
+            onChange={setDate}
+          />
+        </div>
+
+        <div>
+          <label className="mb-2 block font-semibold text-black">
+            🕒 Heure
+          </label>
+
+          <Input
+            type="time"
+            value={time}
+            onChange={setTime}
+          />
+        </div>
 
         <Textarea
           value={notes}
