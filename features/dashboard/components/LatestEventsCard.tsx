@@ -1,34 +1,43 @@
-import Card from "@/components/ui/Card";
+"use client";
 
-const events = [
-  {
-    icon: "🐺",
-    title: "Legacy est prêt",
-    description: "Votre livre de vie peut commencer.",
-  },
-  {
-    icon: "❤️",
-    title: "Premier souvenir",
-    description: "Ajoutez bientôt votre premier moment précieux.",
-  },
-];
+import Link from "next/link";
+
+import Button from "@/components/ui/Button";
+import Card from "@/components/ui/Card";
+import { useFamily } from "@/providers/FamilyProvider";
 
 export default function LatestEventsCard() {
+  const { family } = useFamily();
+
+  const events = [...(family.events ?? [])]
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .slice(0, 3);
+
   return (
     <Card>
-      <p className="text-sm text-black">Derniers événements</p>
+      <div className="flex items-center justify-between gap-4">
+        <h2 className="text-xl font-semibold text-black">
+          Derniers événements
+        </h2>
 
-      <div className="mt-4 space-y-4">
-        {events.map((event) => (
-          <div key={event.title} className="flex gap-3">
-            <div className="text-2xl">{event.icon}</div>
+        <Link href="/timeline">
+          <Button>Voir tout</Button>
+        </Link>
+      </div>
 
-            <div>
+      <div className="mt-6 space-y-4">
+        {events.length === 0 ? (
+          <p className="text-black">Aucun événement.</p>
+        ) : (
+          events.map((event) => (
+            <div key={event.id} className="border-b border-gray-100 pb-3">
               <p className="font-semibold text-black">{event.title}</p>
-              <p className="text-sm text-black">{event.description}</p>
+              <p className="mt-1 text-sm text-black">
+                {new Date(event.date).toLocaleDateString("fr-FR")}
+              </p>
             </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
     </Card>
   );

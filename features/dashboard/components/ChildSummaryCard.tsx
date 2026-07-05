@@ -45,50 +45,52 @@ export default function ChildSummaryCard() {
           </h2>
 
           <p className="text-sm text-black">
-            {family.birthPlace ? `Né(e) à ${family.birthPlace}` : "Livre de vie"}
+            {family.birthPlace
+              ? `Né(e) à ${family.birthPlace}`
+              : "Livre de vie"}
           </p>
         </div>
       </div>
 
       <div className="mt-8 space-y-4">
         {family.birthWeight && (
-          <div className="rounded-xl bg-[#F8F6F2] p-4">
-            <p className="font-semibold">⚖️ Poids de naissance</p>
-            <p className="mt-2 text-sm">{family.birthWeight} kg</p>
+          <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+            <p className="font-semibold text-black">⚖️ Poids de naissance</p>
+            <p className="mt-2 text-sm text-black">{family.birthWeight} kg</p>
           </div>
         )}
 
         {family.birthHeight && (
-          <div className="rounded-xl bg-[#F8F6F2] p-4">
-            <p className="font-semibold">📏 Taille de naissance</p>
-            <p className="mt-2 text-sm">{family.birthHeight} cm</p>
+          <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+            <p className="font-semibold text-black">📏 Taille de naissance</p>
+            <p className="mt-2 text-sm text-black">{family.birthHeight} cm</p>
           </div>
         )}
 
-        <div className="rounded-xl bg-[#F8F6F2] p-4">
-          <p className="font-semibold">❤️ Dernier souvenir</p>
-          <p className="mt-2 text-sm">
+        <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+          <p className="font-semibold text-black">❤️ Dernier souvenir</p>
+          <p className="mt-2 text-sm text-black">
             {latestMemory ? latestMemory.title : "Aucun souvenir"}
           </p>
         </div>
 
-        <div className="rounded-xl bg-[#F8F6F2] p-4">
-          <p className="font-semibold">📸 Dernière photo</p>
-          <p className="mt-2 text-sm">
+        <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+          <p className="font-semibold text-black">📸 Dernière photo</p>
+          <p className="mt-2 text-sm text-black">
             {latestPhoto ? latestPhoto.title : "Aucune photo"}
           </p>
         </div>
 
-        <div className="rounded-xl bg-[#F8F6F2] p-4">
-          <p className="font-semibold">📈 Dernière mesure</p>
-          <p className="mt-2 whitespace-pre-line text-sm">
+        <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+          <p className="font-semibold text-black">📈 Dernière mesure</p>
+          <p className="mt-2 whitespace-pre-line text-sm text-black">
             {latestGrowth ? latestGrowth.description : "Aucune mesure"}
           </p>
         </div>
 
-        <div className="rounded-xl bg-[#F8F6F2] p-4">
-          <p className="font-semibold">🩺 Dernier suivi santé</p>
-          <p className="mt-2 text-sm">
+        <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+          <p className="font-semibold text-black">🩺 Dernier suivi santé</p>
+          <p className="mt-2 text-sm text-black">
             {latestHealth ? latestHealth.title : "Aucun événement"}
           </p>
         </div>

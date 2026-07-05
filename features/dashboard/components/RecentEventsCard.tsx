@@ -15,7 +15,7 @@ export default function RecentEventsCard({ events }: Props) {
   return (
     <Card>
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold">
+        <h2 className="text-xl font-semibold text-black">
           Derniers événements
         </h2>
 
@@ -31,13 +31,20 @@ export default function RecentEventsCard({ events }: Props) {
           </p>
         ) : (
           latest.map((event) => (
-            <div key={event.id}>
-              <p className="font-semibold">
+            <div
+              key={event.id}
+              className="border-b border-gray-100 pb-3 last:border-b-0"
+            >
+              <p className="font-semibold text-black">
                 {event.title}
               </p>
 
-              <p className="text-sm text-black">
+              <p className="mt-1 text-sm text-black">
                 {event.description}
+              </p>
+
+              <p className="mt-1 text-xs text-gray-700">
+                {new Date(event.date).toLocaleDateString("fr-FR")}
               </p>
             </div>
           ))

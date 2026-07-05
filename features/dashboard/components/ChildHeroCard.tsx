@@ -1,7 +1,6 @@
 import Card from "@/components/ui/Card";
-import { getAgeLabel, getDaysUntilLabel } from "@/utils/dateUtils";
 
-type ChildHeroCardProps = {
+type Props = {
   childName: string;
   isBorn: boolean | null;
   birthDate: string;
@@ -11,29 +10,28 @@ type ChildHeroCardProps = {
 export default function ChildHeroCard({
   childName,
   isBorn,
-  birthDate,
-  pregnancyDate,
-}: ChildHeroCardProps) {
-  const subtitle =
-    isBorn === false
-      ? getDaysUntilLabel(pregnancyDate)
-      : getAgeLabel(birthDate);
-
+}: Props) {
   return (
     <Card>
-      <div className="flex items-center gap-4">
-        <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-[#F8F6F2] text-4xl">
+      <div className="flex items-center gap-5">
+        <div className="flex h-24 w-24 items-center justify-center rounded-3xl bg-[#F8F6F2] text-5xl">
           👶
         </div>
 
         <div>
-          <p className="text-sm text-black">Livre de vie</p>
+          <p className="text-sm font-semibold text-black">
+            Livre de vie
+          </p>
 
-          <h2 className="mt-1 text-3xl font-bold text-blacks">
+          <h2 className="mt-2 text-4xl font-bold text-black">
             {childName || "Votre enfant"}
           </h2>
 
-          <p className="mt-1 text-black">{subtitle}</p>
+          <p className="mt-2 text-black">
+            {isBorn === false
+              ? "Votre histoire commence déjà."
+              : "Votre histoire commence ici."}
+          </p>
         </div>
       </div>
     </Card>

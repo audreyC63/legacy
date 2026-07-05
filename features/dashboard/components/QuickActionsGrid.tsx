@@ -3,26 +3,10 @@ import Link from "next/link";
 import Card from "@/components/ui/Card";
 
 const actions = [
-  {
-    icon: "❤️",
-    label: "Souvenirs",
-    href: "/memories",
-  },
-  {
-    icon: "📖",
-    label: "Timeline",
-    href: "/timeline",
-  },
-  {
-    icon: "📈",
-    label: "Croissance",
-    href: "/growth",
-  },
-  {
-    icon: "🩺",
-    label: "Santé",
-    href: "/health",
-  },
+  { icon: "❤️", label: "Souvenirs", href: "/memories" },
+  { icon: "📖", label: "Timeline", href: "/timeline" },
+  { icon: "📈", label: "Croissance", href: "/growth" },
+  { icon: "🩺", label: "Santé", href: "/health" },
 ];
 
 export default function QuickActionsGrid() {
@@ -33,7 +17,7 @@ export default function QuickActionsGrid() {
           <Card>
             <p className="text-3xl">{action.icon}</p>
 
-            <p className="mt-3 font-semibold">
+            <p className="mt-4 font-semibold text-black">
               {action.label}
             </p>
           </Card>
