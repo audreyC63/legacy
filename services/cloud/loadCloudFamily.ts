@@ -3,6 +3,7 @@ import { Family } from "@/types/Family";
 
 type FamilyMemberRow = {
   family_id: string;
+  created_at: string;
 };
 
 type ChildRow = {
@@ -27,6 +28,16 @@ export type CloudFamilyResult = {
   family: Partial<Family>;
 };
 
+function getPreferredFamilyId() {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  return window.localStorage.getItem(
+    "legacy-active-family-id"
+  );
+}
+
 export async function loadCloudFamily(): Promise<CloudFamilyResult | null> {
   const {
     data: { user },
@@ -37,49 +48,69 @@ export async function loadCloudFamily(): Promise<CloudFamilyResult | null> {
     return null;
   }
 
-  const {
-    data: membership,
-    error: membershipError,
-  } = await supabase
-    .from("family_members")
-    .select("family_id")
-    .eq("user_id", user.id)
-    .limit(1)
-    .maybeSingle<FamilyMemberRow>();
+  const { data, error: membershipError } =
+    await supabase
+      .from("family_members")
+      .select("family_id, created_at")
+      .eq("user_id", user.id)
+      .order("created_at", {
+        ascending: false,
+      });
 
   if (membershipError) {
     throw membershipError;
   }
 
-  if (!membership) {
+  const memberships =
+    (data ?? []) as FamilyMemberRow[];
+
+  if (memberships.length === 0) {
     return null;
   }
 
-  const {
-    data: child,
-    error: childError,
-  } = await supabase
-    .from("children")
-    .select(
-      `
-        id,
-        family_id,
-        first_name,
-        is_born,
-        birth_date,
-        expected_birth_date,
-        profile_photo_path,
-        birth_place,
-        birth_weight_kg,
-        birth_height_cm,
-        blood_group,
-        eye_color,
-        hair_color
-      `
-    )
-    .eq("family_id", membership.family_id)
-    .limit(1)
-    .maybeSingle<ChildRow>();
+  const preferredFamilyId =
+    getPreferredFamilyId();
+
+  const selectedMembership =
+    memberships.find(
+      (membership) =>
+        membership.family_id ===
+        preferredFamilyId
+    ) ?? memberships[0];
+
+  const familyId =
+    selectedMembership.family_id;
+
+  if (typeof window !== "undefined") {
+    window.localStorage.setItem(
+      "legacy-active-family-id",
+      familyId
+    );
+  }
+
+  const { data: child, error: childError } =
+    await supabase
+      .from("children")
+      .select(
+        `
+          id,
+          family_id,
+          first_name,
+          is_born,
+          birth_date,
+          expected_birth_date,
+          profile_photo_path,
+          birth_place,
+          birth_weight_kg,
+          birth_height_cm,
+          blood_group,
+          eye_color,
+          hair_color
+        `
+      )
+      .eq("family_id", familyId)
+      .limit(1)
+      .maybeSingle<ChildRow>();
 
   if (childError) {
     throw childError;
@@ -90,23 +121,27 @@ export async function loadCloudFamily(): Promise<CloudFamilyResult | null> {
   }
 
   return {
-    familyId: membership.family_id,
+    familyId,
     childId: child.id,
 
     family: {
       childName: child.first_name,
       isBorn: child.is_born,
       birthDate: child.birth_date ?? "",
-      pregnancyDate: child.expected_birth_date ?? "",
+      pregnancyDate:
+        child.expected_birth_date ?? "",
       birthPlace: child.birth_place ?? "",
+
       birthWeight:
         child.birth_weight_kg === null
           ? ""
           : String(child.birth_weight_kg),
+
       birthHeight:
         child.birth_height_cm === null
           ? ""
           : String(child.birth_height_cm),
+
       bloodGroup: child.blood_group ?? "",
       eyeColor: child.eye_color ?? "",
       hairColor: child.hair_color ?? "",
