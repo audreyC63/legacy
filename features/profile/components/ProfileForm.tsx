@@ -43,7 +43,7 @@ export default function ProfileForm() {
   return (
     <Card>
       <h2 className="text-xl font-semibold text-black">
-        Profil de l'enfant
+        Profil de l&apos;enfant
       </h2>
 
       <div className="mt-5 space-y-4">

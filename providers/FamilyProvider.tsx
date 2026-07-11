@@ -1,11 +1,13 @@
+/* eslint-disable react-hooks/set-state-in-effect */
+
 "use client";
 
 import {
   createContext,
+  ReactNode,
   useContext,
   useEffect,
   useState,
-  ReactNode,
 } from "react";
 
 import { loadFamily, saveFamily } from "@/lib/storage";
@@ -35,7 +37,11 @@ const initialFamily: Family = {
   hairColor: "",
 };
 
-export function FamilyProvider({ children }: { children: ReactNode }) {
+export function FamilyProvider({
+  children,
+}: {
+  children: ReactNode;
+}) {
   const [family, setFamily] = useState<Family>(initialFamily);
 
   useEffect(() => {
@@ -65,7 +71,9 @@ export function useFamily() {
   const context = useContext(FamilyContext);
 
   if (!context) {
-    throw new Error("useFamily doit être utilisé dans FamilyProvider.");
+    throw new Error(
+      "useFamily doit être utilisé dans FamilyProvider."
+    );
   }
 
   return context;

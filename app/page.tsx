@@ -10,11 +10,13 @@ export default function Home() {
       <div className="mx-auto flex max-w-md flex-col px-6 py-10">
         <PageHeader
           title="Legacy"
-          subtitle="Chaque vie mérite d'être racontée."
+          subtitle="Chaque vie mérite d&apos;être racontée."
         />
 
         <Card>
-          <p className="text-sm font-semibold text-black">Bienvenue</p>
+          <p className="text-sm font-semibold text-black">
+            Bienvenue
+          </p>
 
           <h2 className="mt-2 text-2xl font-semibold text-black">
             Bienvenue dans Legacy
@@ -23,13 +25,13 @@ export default function Home() {
           <p className="mt-4 text-black">
             Créez le livre de vie de votre enfant et conservez chaque souvenir,
             chaque étape importante et chaque moment précieux, de la grossesse
-            jusqu'à l'âge adulte.
+            jusqu&apos;à l&apos;âge adulte.
           </p>
         </Card>
 
         <div className="mt-8">
           <Link href="/onboarding">
-            <Button>Commencer l'aventure</Button>
+            <Button>Commencer l&apos;aventure</Button>
           </Link>
         </div>
       </div>
