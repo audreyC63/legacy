@@ -6,8 +6,10 @@ import PageHeader from "@/components/ui/PageHeader";
 import BottomNavigation from "@/components/navigation/BottomNavigation";
 
 import LatestGrowthCard from "@/features/growth/components/LatestGrowthCard";
+import GrowthCharts from "@/features/growth/components/GrowthCharts";
 import GrowthForm from "@/features/growth/components/GrowthForm";
 import GrowthHistory from "@/features/growth/components/GrowthHistory";
+
 import { LegacyEvent } from "@/types/Event";
 
 export default function GrowthPage() {
@@ -23,6 +25,8 @@ export default function GrowthPage() {
         />
 
         <LatestGrowthCard />
+
+        <GrowthCharts />
 
         <GrowthForm
           editingEvent={editingEvent}

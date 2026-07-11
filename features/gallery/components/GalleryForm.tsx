@@ -16,7 +16,26 @@ type Props = {
   onDone?: () => void;
 };
 
-export default function GalleryForm({ editingEvent, onDone }: Props) {
+function toIsoDate(date: string) {
+  const [day, month, year] = date.split("/");
+
+  if (!day || !month || !year) {
+    return new Date().toISOString();
+  }
+
+  return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}T00:00:00`;
+}
+
+function toDisplayDate(date: string) {
+  if (!date) return "";
+
+  return new Date(date).toLocaleDateString("fr-FR");
+}
+
+export default function GalleryForm({
+  editingEvent,
+  onDone,
+}: Props) {
   const { setFamily } = useFamily();
 
   const [title, setTitle] = useState("");
@@ -28,13 +47,16 @@ export default function GalleryForm({ editingEvent, onDone }: Props) {
     if (!editingEvent) return;
 
     setTitle(editingEvent.title.replace("📸 ", ""));
+    setDate(toDisplayDate(editingEvent.date));
     setDescription(editingEvent.description);
-    setDate(editingEvent.date.split("T")[0]);
     setImage(editingEvent.images[0] ?? "");
   }, [editingEvent]);
 
-  function handleImage(event: React.ChangeEvent<HTMLInputElement>) {
+  function handleImage(
+    event: React.ChangeEvent<HTMLInputElement>
+  ) {
     const file = event.target.files?.[0];
+
     if (!file) return;
 
     const reader = new FileReader();
@@ -46,18 +68,33 @@ export default function GalleryForm({ editingEvent, onDone }: Props) {
     reader.readAsDataURL(file);
   }
 
+  function resetForm() {
+    setTitle("");
+    setDate("");
+    setDescription("");
+    setImage("");
+  }
+
   function savePhoto() {
     if (!title.trim()) return;
+
+    const eventDate = date
+      ? toIsoDate(date)
+      : editingEvent?.date ?? new Date().toISOString();
 
     const payload = {
       title: `📸 ${title}`,
       description,
-      date: date || new Date().toISOString(),
+      date: eventDate,
       images: image ? [image] : [],
     };
 
     if (editingEvent) {
-      setFamily((current) => updateEvent(current, editingEvent.id, payload));
+      setFamily((current) =>
+        updateEvent(current, editingEvent.id, payload)
+      );
+
+      resetForm();
       onDone?.();
       return;
     }
@@ -70,10 +107,7 @@ export default function GalleryForm({ editingEvent, onDone }: Props) {
       })
     );
 
-    setTitle("");
-    setDate("");
-    setDescription("");
-    setImage("");
+    resetForm();
   }
 
   return (
@@ -83,16 +117,26 @@ export default function GalleryForm({ editingEvent, onDone }: Props) {
       </h2>
 
       <div className="mt-5 space-y-4">
-        <Input placeholder="Titre" value={title} onChange={setTitle} />
+        <Input
+          placeholder="Titre"
+          value={title}
+          onChange={setTitle}
+        />
 
-        <Input type="date" value={date} onChange={setDate} />
+        <Input
+          placeholder="Date (JJ/MM/AAAA)"
+          value={date}
+          onChange={setDate}
+        />
 
         <label className="flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[#7C9A7A] bg-[#EDF5EC] p-6 text-center">
           <span className="text-4xl">📸</span>
+
           <span className="mt-2 font-semibold text-black">
             Ajouter une photo
           </span>
-          <span className="mt-1 text-sm text-gray-700">
+
+          <span className="mt-1 text-sm text-black">
             Touchez ici pour choisir une image
           </span>
 
