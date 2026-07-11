@@ -10,6 +10,22 @@ import Textarea from "@/components/ui/Textarea";
 import { useFamily } from "@/providers/FamilyProvider";
 import { addEvent, deleteEvent, toggleFavorite } from "@/services/events";
 
+function toIsoDate(date: string) {
+  const [day, month, year] = date.split("/");
+
+  if (!day || !month || !year) {
+    return new Date().toISOString();
+  }
+
+  return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}T00:00:00`;
+}
+
+function toDisplayDate(date: string) {
+  if (!date) return "";
+
+  return new Date(date).toLocaleDateString("fr-FR");
+}
+
 export default function AddMemoryForm() {
   const { family, setFamily } = useFamily();
 
@@ -30,7 +46,7 @@ export default function AddMemoryForm() {
                 ...event,
                 title,
                 description,
-                date: date || event.date,
+                date: date ? toIsoDate(date) : event.date,
               }
             : event
         ),
@@ -43,7 +59,7 @@ export default function AddMemoryForm() {
           type: "memory",
           title,
           description,
-          date: date || new Date().toISOString(),
+          date: date ? toIsoDate(date) : new Date().toISOString(),
           images: [],
           favorite: false,
         })
@@ -69,7 +85,11 @@ export default function AddMemoryForm() {
         <div className="mt-6 space-y-4">
           <Input value={title} onChange={setTitle} placeholder="Titre" />
 
-          <Input type="date" value={date} onChange={setDate} />
+          <Input
+            value={date}
+            onChange={setDate}
+            placeholder="Date (JJ/MM/AAAA)"
+          />
 
           <Textarea
             value={description}
@@ -114,7 +134,7 @@ export default function AddMemoryForm() {
                     onClick={() => {
                       setEditingId(memory.id);
                       setTitle(memory.title);
-                      setDate(memory.date.split("T")[0]);
+                      setDate(toDisplayDate(memory.date));
                       setDescription(memory.description);
                     }}
                   >
