@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
-import { FamilyProvider } from "@/providers/FamilyProvider";
+import QuickAddButton from "@/components/navigation/QuickAddButton";
 import SideMenu from "@/components/navigation/SideMenu";
+import { FamilyProvider } from "@/providers/FamilyProvider";
 
 export const metadata: Metadata = {
   title: "Legacy",
@@ -19,7 +20,10 @@ export default function RootLayout({
       <body>
         <FamilyProvider>
           <SideMenu />
+
           {children}
+
+          <QuickAddButton />
         </FamilyProvider>
       </body>
     </html>
