@@ -1,112 +1,144 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useState } from "react";
 
 import { useFamily } from "@/providers/FamilyProvider";
 
 export default function SideMenu() {
   const { family } = useFamily();
+
+  const [mounted, setMounted] = useState(false);
   const [open, setOpen] = useState(false);
 
-  const links = [
-    { href: "/dashboard", icon: "🏠", label: "Accueil" },
-    { href: "/memories", icon: "❤️", label: "Souvenirs" },
-    { href: "/gallery", icon: "📸", label: "Galerie" },
-    { href: "/growth", icon: "📈", label: "Croissance" },
-    { href: "/health", icon: "🩺", label: "Santé" },
-    { href: "/timeline", icon: "📖", label: "Timeline" },
-    { href: "/profile", icon: "👶", label: "Profil" },
-    { href: "/settings", icon: "⚙️", label: "Paramètres" },
-  ];
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return (
+      <button
+        className="fixed left-5 top-5 z-50 rounded-xl bg-white p-3 shadow-lg"
+        aria-label="Menu"
+      >
+        ☰
+      </button>
+    );
+  }
 
   return (
     <>
       <button
         onClick={() => setOpen(true)}
-        className="fixed left-4 top-4 z-50 flex h-11 w-11 items-center justify-center rounded-full bg-[#7C9A7A] text-xl text-white shadow-lg transition hover:bg-[#6D8B6B]"
+        className="fixed left-5 top-5 z-50 rounded-xl bg-white p-3 shadow-lg"
+        aria-label="Menu"
       >
         ☰
       </button>
 
-      <div
-        className={`fixed inset-0 z-50 transition ${
-          open ? "visible bg-black/40" : "invisible bg-black/0"
-        }`}
-        onClick={() => setOpen(false)}
-      >
-        <aside
-          onClick={(e) => e.stopPropagation()}
-          className={`absolute left-0 top-0 flex h-full w-80 flex-col bg-white shadow-2xl transition-transform duration-300 ${
-            open ? "translate-x-0" : "-translate-x-full"
-          }`}
+      {open && (
+        <div
+          className="fixed inset-0 z-50 bg-black/40"
+          onClick={() => setOpen(false)}
         >
-          {/* En-tête */}
-          <div className="bg-[#7C9A7A] px-6 py-8 text-white">
-            <div className="flex items-center gap-4">
-              {family.profilePhoto ? (
-                <img
-                  src={family.profilePhoto}
-                  alt="Profil"
-                  className="h-16 w-16 rounded-full border-2 border-white object-cover"
-                />
-              ) : (
-                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white text-3xl">
-                  👶
-                </div>
-              )}
-
-              <div>
-                <h2 className="text-xl font-bold">
-                  {family.childName || "Mon enfant"}
-                </h2>
-
-                {family.birthDate && (
-                  <p className="text-sm text-green-100">
-                    Né(e) le{" "}
-                    {new Date(family.birthDate).toLocaleDateString("fr-FR")}
-                  </p>
+          <aside
+            onClick={(e) => e.stopPropagation()}
+            className="absolute left-0 top-0 h-full w-80 bg-white shadow-xl"
+          >
+            <div className="bg-[#7C9A7A] p-6 text-white">
+              <div className="flex items-center gap-4">
+                {family.profilePhoto ? (
+                  <img
+                    src={family.profilePhoto}
+                    alt="Profil"
+                    className="h-16 w-16 rounded-full border-2 border-white object-cover"
+                  />
+                ) : (
+                  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white text-3xl">
+                    👶
+                  </div>
                 )}
+
+                <div>
+                  <h2 className="font-bold">
+                    {family.childName || "Legacy"}
+                  </h2>
+
+                  <p className="text-sm">
+                    {family.parentOne || "Famille"}
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Navigation */}
-          <nav className="flex-1 overflow-y-auto p-6 pb-32">
-            <div className="space-y-2">
-              {links.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setOpen(false)}
-                  className="flex items-center gap-4 rounded-2xl px-4 py-3 text-black transition hover:bg-[#EDF5EC]"
-                >
-                  <span className="text-2xl">{link.icon}</span>
+            <nav className="flex flex-col p-4">
+              <Link
+                href="/dashboard"
+                onClick={() => setOpen(false)}
+                className="rounded-xl p-3 hover:bg-gray-100"
+              >
+                🏠 Accueil
+              </Link>
 
-                  <span className="font-medium">{link.label}</span>
-                </Link>
-              ))}
-            </div>
+              <Link
+                href="/timeline"
+                onClick={() => setOpen(false)}
+                className="rounded-xl p-3 hover:bg-gray-100"
+              >
+                📖 Timeline
+              </Link>
 
-            <hr className="my-8" />
+              <Link
+                href="/memories"
+                onClick={() => setOpen(false)}
+                className="rounded-xl p-3 hover:bg-gray-100"
+              >
+                ❤️ Souvenirs
+              </Link>
 
-            <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-400">
-              Bientôt
-            </p>
+              <Link
+                href="/gallery"
+                onClick={() => setOpen(false)}
+                className="rounded-xl p-3 hover:bg-gray-100"
+              >
+                📸 Galerie
+              </Link>
 
-            <div className="space-y-2 text-black">
-              <p>☁️ Synchronisation</p>
-              <p>📤 Export PDF</p>
-              <p>🔔 Notifications</p>
-            </div>
-          </nav>
+              <Link
+                href="/growth"
+                onClick={() => setOpen(false)}
+                className="rounded-xl p-3 hover:bg-gray-100"
+              >
+                📈 Croissance
+              </Link>
 
-          {/* Pied */}
-          <div className="border-t border-gray-200 p-6 text-center text-sm text-black">
-            Legacy V1 Beta
-          </div>
-        </aside>
-      </div>
+              <Link
+                href="/health"
+                onClick={() => setOpen(false)}
+                className="rounded-xl p-3 hover:bg-gray-100"
+              >
+                🩺 Santé
+              </Link>
+
+              <Link
+                href="/profile"
+                onClick={() => setOpen(false)}
+                className="rounded-xl p-3 hover:bg-gray-100"
+              >
+                👤 Profil
+              </Link>
+
+              <Link
+                href="/settings"
+                onClick={() => setOpen(false)}
+                className="rounded-xl p-3 hover:bg-gray-100"
+              >
+                ⚙️ Paramètres
+              </Link>
+            </nav>
+          </aside>
+        </div>
+      )}
     </>
   );
 }

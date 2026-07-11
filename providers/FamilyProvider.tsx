@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/set-state-in-effect */
+
 "use client";
 
 import {
@@ -15,13 +17,16 @@ import { Family } from "@/types/Family";
 
 type FamilyContextType = {
   family: Family;
-  setFamily: React.Dispatch<React.SetStateAction<Family>>;
+  setFamily: React.Dispatch<
+    React.SetStateAction<Family>
+  >;
   cloudFamilyId: string | null;
   cloudChildId: string | null;
   cloudLoading: boolean;
 };
 
-const FamilyContext = createContext<FamilyContextType | null>(null);
+const FamilyContext =
+  createContext<FamilyContextType | null>(null);
 
 const initialFamily: Family = {
   childName: "",
@@ -40,30 +45,15 @@ const initialFamily: Family = {
   hairColor: "",
 };
 
-function getInitialFamily(): Family {
-  if (typeof window === "undefined") {
-    return initialFamily;
-  }
-
-  const saved = loadFamily();
-
-  if (!saved) {
-    return initialFamily;
-  }
-
-  return {
-    ...initialFamily,
-    ...saved,
-    events: saved.events ?? [],
-  };
-}
-
 export function FamilyProvider({
   children,
 }: {
   children: ReactNode;
 }) {
-  const [family, setFamily] = useState<Family>(getInitialFamily);
+  const [hydrated, setHydrated] = useState(false);
+
+  const [family, setFamily] =
+    useState<Family>(initialFamily);
 
   const [cloudFamilyId, setCloudFamilyId] =
     useState<string | null>(null);
@@ -71,13 +61,42 @@ export function FamilyProvider({
   const [cloudChildId, setCloudChildId] =
     useState<string | null>(null);
 
-  const [cloudLoading, setCloudLoading] = useState(true);
+  const [cloudLoading, setCloudLoading] =
+    useState(true);
 
+  /*
+   * Chargement local uniquement après l’hydratation.
+   * Le serveur et le premier rendu du navigateur restent identiques.
+   */
   useEffect(() => {
+    const saved = loadFamily();
+
+    if (saved) {
+      setFamily({
+        ...initialFamily,
+        ...saved,
+        events: saved.events ?? [],
+      });
+    }
+
+    setHydrated(true);
+  }, []);
+
+  /*
+   * Sauvegarde locale temporaire pendant la migration V2.
+   */
+  useEffect(() => {
+    if (!hydrated) return;
+
     saveFamily(family);
-  }, [family]);
+  }, [family, hydrated]);
 
+  /*
+   * Chargement du profil enfant depuis Supabase.
+   */
   useEffect(() => {
+    if (!hydrated) return;
+
     let active = true;
 
     async function hydrateFromCloud() {
@@ -86,7 +105,11 @@ export function FamilyProvider({
       try {
         const result = await loadCloudFamily();
 
-        if (!active || !result) {
+        if (!active) return;
+
+        if (!result) {
+          setCloudFamilyId(null);
+          setCloudChildId(null);
           return;
         }
 
@@ -97,11 +120,18 @@ export function FamilyProvider({
           ...current,
           ...result.family,
 
-          // Les événements restent encore locaux à cette étape.
+          /*
+           * Les événements sont encore migrés
+           * fonctionnalité par fonctionnalité.
+           */
           events: current.events ?? [],
 
-          // La photo locale reste utilisée jusqu’à la migration Storage.
-          profilePhoto: current.profilePhoto ?? "",
+          /*
+           * La photo locale reste utilisée
+           * jusqu’à sa migration dans Storage.
+           */
+          profilePhoto:
+            current.profilePhoto ?? "",
         }));
       } catch (error) {
         console.error(
@@ -127,7 +157,20 @@ export function FamilyProvider({
       active = false;
       subscription.unsubscribe();
     };
-  }, []);
+  }, [hydrated]);
+
+  /*
+   * Même affichage côté serveur et au premier rendu client.
+   */
+  if (!hydrated) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-[#F8F6F2] px-6">
+        <p className="text-center font-semibold text-black">
+          Chargement de Legacy…
+        </p>
+      </main>
+    );
+  }
 
   return (
     <FamilyContext.Provider
