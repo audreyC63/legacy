@@ -1,6 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useState,
+} from "react";
 
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
@@ -8,8 +11,12 @@ import Input from "@/components/ui/Input";
 import Textarea from "@/components/ui/Textarea";
 
 import { useFamily } from "@/providers/FamilyProvider";
-import { addEvent, updateEvent } from "@/services/events";
+import {
+  addEvent,
+  updateEvent,
+} from "@/services/events";
 import { LegacyEvent } from "@/types/Event";
+import { compressImage } from "@/utils/imageUtils";
 
 type Props = {
   editingEvent?: LegacyEvent | null;
@@ -23,13 +30,18 @@ function toIsoDate(date: string) {
     return new Date().toISOString();
   }
 
-  return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}T00:00:00`;
+  return `${year}-${month.padStart(
+    2,
+    "0"
+  )}-${day.padStart(2, "0")}T00:00:00`;
 }
 
 function toDisplayDate(date: string) {
   if (!date) return "";
 
-  return new Date(date).toLocaleDateString("fr-FR");
+  return new Date(date).toLocaleDateString(
+    "fr-FR"
+  );
 }
 
 export default function GalleryForm({
@@ -40,32 +52,43 @@ export default function GalleryForm({
 
   const [title, setTitle] = useState("");
   const [date, setDate] = useState("");
-  const [description, setDescription] = useState("");
+  const [description, setDescription] =
+    useState("");
   const [image, setImage] = useState("");
+  const [imageLoading, setImageLoading] =
+    useState(false);
 
   useEffect(() => {
     if (!editingEvent) return;
 
-    setTitle(editingEvent.title.replace("📸 ", ""));
+    setTitle(
+      editingEvent.title.replace(/^📸\s*/, "")
+    );
     setDate(toDisplayDate(editingEvent.date));
     setDescription(editingEvent.description);
-    setImage(editingEvent.images[0] ?? "");
+    setImage(editingEvent.images?.[0] ?? "");
   }, [editingEvent]);
 
-  function handleImage(
+  async function handleImage(
     event: React.ChangeEvent<HTMLInputElement>
   ) {
     const file = event.target.files?.[0];
 
     if (!file) return;
 
-    const reader = new FileReader();
+    setImageLoading(true);
 
-    reader.onloadend = () => {
-      setImage(reader.result as string);
-    };
-
-    reader.readAsDataURL(file);
+    try {
+      const compressed = await compressImage(file);
+      setImage(compressed);
+    } catch {
+      window.alert(
+        "Cette image n'a pas pu être ajoutée."
+      );
+    } finally {
+      setImageLoading(false);
+      event.target.value = "";
+    }
   }
 
   function resetForm() {
@@ -76,22 +99,39 @@ export default function GalleryForm({
   }
 
   function savePhoto() {
-    if (!title.trim()) return;
+    if (!title.trim()) {
+      window.alert(
+        "Veuillez saisir un titre."
+      );
+      return;
+    }
+
+    if (!image) {
+      window.alert(
+        "Veuillez choisir une photo."
+      );
+      return;
+    }
 
     const eventDate = date
       ? toIsoDate(date)
-      : editingEvent?.date ?? new Date().toISOString();
+      : editingEvent?.date ??
+        new Date().toISOString();
 
     const payload = {
-      title: `📸 ${title}`,
+      title: `📸 ${title.trim()}`,
       description,
       date: eventDate,
-      images: image ? [image] : [],
+      images: [image],
     };
 
     if (editingEvent) {
       setFamily((current) =>
-        updateEvent(current, editingEvent.id, payload)
+        updateEvent(
+          current,
+          editingEvent.id,
+          payload
+        )
       );
 
       resetForm();
@@ -113,7 +153,9 @@ export default function GalleryForm({
   return (
     <Card>
       <h2 className="text-xl font-semibold text-black">
-        {editingEvent ? "Modifier la photo" : "Nouvelle photo"}
+        {editingEvent
+          ? "Modifier la photo"
+          : "Nouvelle photo"}
       </h2>
 
       <div className="mt-5 space-y-4">
@@ -133,7 +175,9 @@ export default function GalleryForm({
           <span className="text-4xl">📸</span>
 
           <span className="mt-2 font-semibold text-black">
-            Ajouter une photo
+            {image
+              ? "Changer la photo"
+              : "Ajouter une photo"}
           </span>
 
           <span className="mt-1 text-sm text-black">
@@ -148,12 +192,28 @@ export default function GalleryForm({
           />
         </label>
 
+        {imageLoading && (
+          <p className="text-center text-sm text-black">
+            Préparation de l’image…
+          </p>
+        )}
+
         {image && (
-          <img
-            src={image}
-            alt="Aperçu"
-            className="h-48 w-full rounded-xl object-cover"
-          />
+          <div>
+            <img
+              src={image}
+              alt="Aperçu"
+              className="h-52 w-full rounded-2xl object-cover"
+            />
+
+            <button
+              type="button"
+              onClick={() => setImage("")}
+              className="mt-2 font-semibold text-red-700"
+            >
+              Retirer la photo
+            </button>
+          </div>
         )}
 
         <Textarea
@@ -162,8 +222,13 @@ export default function GalleryForm({
           placeholder="Description"
         />
 
-        <Button onClick={savePhoto}>
-          {editingEvent ? "Mettre à jour" : "Enregistrer"}
+        <Button
+          onClick={savePhoto}
+          disabled={imageLoading}
+        >
+          {editingEvent
+            ? "Mettre à jour"
+            : "Enregistrer"}
         </Button>
       </div>
     </Card>

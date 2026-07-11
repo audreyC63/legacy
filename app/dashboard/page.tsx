@@ -4,6 +4,7 @@ import BottomNavigation from "@/components/navigation/BottomNavigation";
 import PageHeader from "@/components/ui/PageHeader";
 
 import ChildHeroCard from "@/features/dashboard/components/ChildHeroCard";
+import DashboardHighlights from "@/features/dashboard/components/DashboardHighlights";
 import QuickActionsGrid from "@/features/dashboard/components/QuickActionsGrid";
 import RecentEventsCard from "@/features/dashboard/components/RecentEventsCard";
 import TodayCard from "@/features/dashboard/components/TodayCard";
@@ -36,6 +37,8 @@ export default function DashboardPage() {
         <QuickActionsGrid />
 
         <TodayCard isBorn={family.isBorn} />
+
+        <DashboardHighlights />
 
         <RecentEventsCard events={family.events ?? []} />
       </div>
