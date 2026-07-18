@@ -83,7 +83,7 @@ export default function HospitalizationForm() {
         />
 
         <Button onClick={saveHospitalization}>
-          Enregistrer l'hospitalisation
+          Enregistrer l&apos;hospitalisation
         </Button>
       </div>
     </Card>

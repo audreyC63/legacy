@@ -7,12 +7,12 @@ type TodayCardProps = {
 export default function TodayCard({ isBorn }: TodayCardProps) {
   return (
     <Card>
-      <p className="text-sm text-black">Aujourd'hui</p>
+      <p className="text-sm text-black">Aujourd&apos;hui</p>
 
       <h3 className="mt-2 text-xl font-semibold text-black">
         {isBorn === false
           ? "Votre histoire commence déjà."
-          : "Un nouveau souvenir peut commencer aujourd'hui."}
+          : "Un nouveau souvenir peut commencer aujourd&apos;hui."}
       </h3>
 
       <p className="mt-3 text-black">

@@ -76,7 +76,7 @@ export default function AllergyForm() {
         />
 
         <Button onClick={saveAllergy}>
-          Enregistrer l'allergie
+          Enregistrer l&apos;allergie
         </Button>
       </div>
     </Card>

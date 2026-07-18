@@ -1,56 +1,213 @@
 "use client";
 
+import {
+  useEffect,
+  useState,
+  type ChangeEvent,
+} from "react";
+
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import Input from "@/components/ui/Input";
+
+import {
+  emptyCloudChildProfile,
+  getChildProfile,
+  saveChildProfile,
+  type CloudChildProfile,
+} from "@/features/profile/services/profile";
 
 import { useFamily } from "@/providers/FamilyProvider";
 import { compressImage } from "@/utils/imageUtils";
 
 export default function ProfileForm() {
-  const { family, setFamily } = useFamily();
+  const {
+    family,
+    setFamily,
+    refreshCloudFamily,
+  } = useFamily();
+
+  const [form, setForm] =
+    useState<CloudChildProfile>({
+      ...emptyCloudChildProfile,
+    });
+
+  const [loading, setLoading] =
+    useState(true);
+
+  const [saving, setSaving] =
+    useState(false);
+
+  const [error, setError] =
+    useState<string | null>(null);
+
+  const [success, setSuccess] =
+    useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadProfile() {
+      try {
+        setLoading(true);
+        setError(null);
+        setSuccess(null);
+
+        const result = await getChildProfile();
+
+        if (cancelled) {
+          return;
+        }
+
+        setForm(result.profile);
+
+        setFamily((current) => ({
+          ...current,
+          ...result.profile,
+          isBorn:
+            Boolean(result.profile.birthDate) ||
+            current.isBorn,
+        }));
+      } catch (loadError) {
+        if (cancelled) {
+          return;
+        }
+
+        setError(
+          loadError instanceof Error
+            ? loadError.message
+            : "Impossible de charger le profil.",
+        );
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    }
+
+    void loadProfile();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [setFamily]);
 
   function updateField(
-    field: string,
-    value: string
+    field: keyof CloudChildProfile,
+    value: string,
   ) {
-    setFamily((current) => ({
+    setSuccess(null);
+    setError(null);
+
+    setForm((current) => ({
       ...current,
       [field]: value,
     }));
   }
 
   async function handlePhoto(
-    event: React.ChangeEvent<HTMLInputElement>
+    event: ChangeEvent<HTMLInputElement>,
   ) {
     const file = event.target.files?.[0];
 
-    if (!file) return;
+    if (!file) {
+      return;
+    }
 
     try {
-      const image = await compressImage(file);
+      setError(null);
+      setSuccess(null);
 
-      updateField("profilePhoto", image);
+      const compressedImage =
+        await compressImage(file);
+
+      updateField(
+        "profilePhoto",
+        compressedImage,
+      );
     } catch {
-      window.alert(
-        "Cette image n'a pas pu être ajoutée."
+      setError(
+        "Cette image n'a pas pu être ajoutée.",
       );
     } finally {
       event.target.value = "";
     }
   }
 
+  function removePhoto() {
+    updateField("profilePhoto", "");
+  }
+
+  async function handleSave() {
+    try {
+      setSaving(true);
+      setError(null);
+      setSuccess(null);
+
+      if (!form.childName.trim()) {
+        throw new Error(
+          "Le prénom de l'enfant est obligatoire.",
+        );
+      }
+
+      const savedProfile =
+        await saveChildProfile(form);
+
+      setForm(savedProfile);
+
+      setFamily((current) => ({
+        ...current,
+        ...savedProfile,
+        isBorn: Boolean(
+          savedProfile.birthDate,
+        ),
+      }));
+
+      await refreshCloudFamily();
+
+      setSuccess(
+        "Profil enregistré et synchronisé.",
+      );
+    } catch (saveError) {
+      setError(
+        saveError instanceof Error
+          ? saveError.message
+          : "Impossible d'enregistrer le profil.",
+      );
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  if (loading) {
+    return (
+      <Card>
+        <div className="py-8 text-center">
+          <p className="font-semibold text-black">
+            Chargement du profil…
+          </p>
+        </div>
+      </Card>
+    );
+  }
+
   return (
     <Card>
       <h2 className="text-xl font-semibold text-black">
-        Profil de l'enfant
+        Profil de l&apos;enfant
       </h2>
 
+      <p className="mt-1 text-sm text-gray-600">
+        Ces informations sont enregistrées dans
+        Supabase et partagées avec les membres de la
+        famille.
+      </p>
+
       <div className="mt-5 space-y-4">
-        {family.profilePhoto ? (
+        {form.profilePhoto ? (
           <img
-            src={family.profilePhoto}
-            alt="Photo de profil"
+            src={form.profilePhoto}
+            alt={`Photo de ${form.childName || "l'enfant"}`}
             className="mx-auto h-36 w-36 rounded-full border-4 border-[#EDF5EC] object-cover shadow-sm"
           />
         ) : (
@@ -60,10 +217,12 @@ export default function ProfileForm() {
         )}
 
         <label className="flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[#7C9A7A] bg-[#EDF5EC] p-6 text-center">
-          <span className="text-4xl">📸</span>
+          <span className="text-4xl">
+            📸
+          </span>
 
           <span className="mt-2 font-semibold text-black">
-            {family.profilePhoto
+            {form.profilePhoto
               ? "Changer la photo de profil"
               : "Ajouter une photo de profil"}
           </span>
@@ -80,89 +239,190 @@ export default function ProfileForm() {
           />
         </label>
 
-        {family.profilePhoto && (
+        {form.profilePhoto && (
           <button
             type="button"
-            onClick={() =>
-              updateField("profilePhoto", "")
-            }
-            className="w-full font-semibold text-red-700"
+            onClick={removePhoto}
+            className="w-full rounded-2xl px-4 py-2 font-semibold text-red-700 transition hover:bg-red-50"
           >
             Supprimer la photo
           </button>
         )}
 
-        <Input
-          placeholder="Prénom"
-          value={family.childName}
-          onChange={(value) =>
-            updateField("childName", value)
-          }
-        />
+        <div>
+          <label className="mb-2 block text-sm font-semibold text-black">
+            Prénom
+          </label>
 
-        <Input
-          type="date"
-          value={family.birthDate}
-          onChange={(value) =>
-            updateField("birthDate", value)
-          }
-        />
+          <Input
+            placeholder="Prénom"
+            value={form.childName}
+            onChange={(value) =>
+              updateField(
+                "childName",
+                value,
+              )
+            }
+          />
+        </div>
 
-        <Input
-          placeholder="Lieu de naissance"
-          value={family.birthPlace ?? ""}
-          onChange={(value) =>
-            updateField("birthPlace", value)
-          }
-        />
+        <div>
+          <label className="mb-2 block text-sm font-semibold text-black">
+            Date de naissance
+          </label>
 
-        <Input
-          placeholder="Poids de naissance (kg)"
-          value={family.birthWeight ?? ""}
-          onChange={(value) =>
-            updateField("birthWeight", value)
-          }
-        />
+          <Input
+            type="date"
+            value={form.birthDate}
+            onChange={(value) =>
+              updateField(
+                "birthDate",
+                value,
+              )
+            }
+          />
+        </div>
 
-        <Input
-          placeholder="Taille de naissance (cm)"
-          value={family.birthHeight ?? ""}
-          onChange={(value) =>
-            updateField("birthHeight", value)
-          }
-        />
+        <div>
+          <label className="mb-2 block text-sm font-semibold text-black">
+            Lieu de naissance
+          </label>
 
-        <Input
-          placeholder="Groupe sanguin"
-          value={family.bloodGroup ?? ""}
-          onChange={(value) =>
-            updateField("bloodGroup", value)
-          }
-        />
+          <Input
+            placeholder="Lieu de naissance"
+            value={form.birthPlace}
+            onChange={(value) =>
+              updateField(
+                "birthPlace",
+                value,
+              )
+            }
+          />
+        </div>
 
-        <Input
-          placeholder="Couleur des yeux"
-          value={family.eyeColor ?? ""}
-          onChange={(value) =>
-            updateField("eyeColor", value)
-          }
-        />
+        <div>
+          <label className="mb-2 block text-sm font-semibold text-black">
+            Poids de naissance
+          </label>
 
-        <Input
-          placeholder="Couleur des cheveux"
-          value={family.hairColor ?? ""}
-          onChange={(value) =>
-            updateField("hairColor", value)
-          }
-        />
+          <Input
+            placeholder="Ex. 3,250 kg"
+            value={form.birthWeight}
+            onChange={(value) =>
+              updateField(
+                "birthWeight",
+                value,
+              )
+            }
+          />
+        </div>
+
+        <div>
+          <label className="mb-2 block text-sm font-semibold text-black">
+            Taille de naissance
+          </label>
+
+          <Input
+            placeholder="Ex. 49 cm"
+            value={form.birthHeight}
+            onChange={(value) =>
+              updateField(
+                "birthHeight",
+                value,
+              )
+            }
+          />
+        </div>
+
+        <div>
+          <label className="mb-2 block text-sm font-semibold text-black">
+            Groupe sanguin
+          </label>
+
+          <Input
+            placeholder="Ex. O+"
+            value={form.bloodGroup}
+            onChange={(value) =>
+              updateField(
+                "bloodGroup",
+                value,
+              )
+            }
+          />
+        </div>
+
+        <div>
+          <label className="mb-2 block text-sm font-semibold text-black">
+            Couleur des yeux
+          </label>
+
+          <Input
+            placeholder="Couleur des yeux"
+            value={form.eyeColor}
+            onChange={(value) =>
+              updateField(
+                "eyeColor",
+                value,
+              )
+            }
+          />
+        </div>
+
+        <div>
+          <label className="mb-2 block text-sm font-semibold text-black">
+            Couleur des cheveux
+          </label>
+
+          <Input
+            placeholder="Couleur des cheveux"
+            value={form.hairColor}
+            onChange={(value) =>
+              updateField(
+                "hairColor",
+                value,
+              )
+            }
+          />
+        </div>
+
+        {error && (
+          <p
+            role="alert"
+            className="rounded-2xl bg-red-50 px-4 py-3 text-sm font-semibold text-red-700"
+          >
+            {error}
+          </p>
+        )}
+
+        {success && (
+          <p
+            role="status"
+            className="rounded-2xl bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700"
+          >
+            {success}
+          </p>
+        )}
 
         <Button
-          onClick={() =>
-            window.alert("Profil sauvegardé.")
-          }
+          type="button"
+          disabled={saving}
+          onClick={() => {
+            void handleSave();
+          }}
         >
-          Enregistrer
+          {saving
+            ? "Enregistrement…"
+            : "Enregistrer"}
         </Button>
+
+        {family.birthDate &&
+          family.birthDate !==
+            form.birthDate && (
+            <p className="text-center text-xs text-gray-500">
+              Des modifications ne sont pas encore
+              enregistrées.
+            </p>
+          )}
       </div>
     </Card>
   );

@@ -51,7 +51,7 @@ export default function TimelineItem({ event }: Props) {
     return (
       <Card>
         <h3 className="text-xl font-semibold text-black">
-          Modifier l'événement
+          Modifier l&apos;événement
         </h3>
 
         <div className="mt-5 space-y-4">

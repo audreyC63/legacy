@@ -15,7 +15,7 @@ export default function BirthStatusStep() {
       </h2>
 
       <p className="mt-2 text-black">
-        Legacy adaptera l'expérience selon votre réponse.
+        Legacy adaptera l&apos;expérience selon votre réponse.
       </p>
 
       <div className="mt-8 flex flex-col gap-4">
@@ -27,7 +27,7 @@ export default function BirthStatusStep() {
 
         <Link href="/onboarding/family/pregnancy-date">
           <Button onClick={() => setFamily((current) => ({ ...current, isBorn: false }))}>
-            🤰 Non, nous l'attendons
+            🤰 Non, nous l&apos;attendons
           </Button>
         </Link>
       </div>
