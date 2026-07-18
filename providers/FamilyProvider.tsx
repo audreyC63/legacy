@@ -5,6 +5,7 @@
 import {
   createContext,
   ReactNode,
+  useCallback,
   useContext,
   useEffect,
   useState,
@@ -17,12 +18,16 @@ import { Family } from "@/types/Family";
 
 type FamilyContextType = {
   family: Family;
+
   setFamily: React.Dispatch<
     React.SetStateAction<Family>
   >;
+
   cloudFamilyId: string | null;
   cloudChildId: string | null;
   cloudLoading: boolean;
+
+  refreshCloudFamily: () => Promise<void>;
 };
 
 const FamilyContext =
@@ -50,7 +55,8 @@ export function FamilyProvider({
 }: {
   children: ReactNode;
 }) {
-  const [hydrated, setHydrated] = useState(false);
+  const [hydrated, setHydrated] =
+    useState(false);
 
   const [family, setFamily] =
     useState<Family>(initialFamily);
@@ -64,18 +70,14 @@ export function FamilyProvider({
   const [cloudLoading, setCloudLoading] =
     useState(true);
 
-  /*
-   * Chargement local uniquement après l’hydratation.
-   * Le serveur et le premier rendu du navigateur restent identiques.
-   */
   useEffect(() => {
-    const saved = loadFamily();
+    const savedFamily = loadFamily();
 
-    if (saved) {
+    if (savedFamily) {
       setFamily({
         ...initialFamily,
-        ...saved,
-        events: saved.events ?? [],
+        ...savedFamily,
+        events: savedFamily.events ?? [],
       });
     }
 
@@ -83,29 +85,23 @@ export function FamilyProvider({
   }, []);
 
   /*
-   * Sauvegarde locale temporaire pendant la migration V2.
+   * Le stockage local reste seulement un cache.
+   * Supabase devient la source principale.
    */
   useEffect(() => {
-    if (!hydrated) return;
+    if (!hydrated) {
+      return;
+    }
 
     saveFamily(family);
   }, [family, hydrated]);
 
-  /*
-   * Chargement du profil enfant depuis Supabase.
-   */
-  useEffect(() => {
-    if (!hydrated) return;
-
-    let active = true;
-
-    async function hydrateFromCloud() {
+  const refreshCloudFamily =
+    useCallback(async () => {
       setCloudLoading(true);
 
       try {
         const result = await loadCloudFamily();
-
-        if (!active) return;
 
         if (!result) {
           setCloudFamilyId(null);
@@ -118,50 +114,133 @@ export function FamilyProvider({
 
         setFamily((current) => ({
           ...current,
+
+          /*
+           * Les valeurs Supabase remplacent
+           * toujours les anciennes valeurs locales.
+           */
           ...result.family,
 
           /*
-           * Les événements sont encore migrés
-           * fonctionnalité par fonctionnalité.
+           * Les anciens événements restent présents
+           * jusqu'à leur migration complète.
            */
           events: current.events ?? [],
-
-          /*
-           * La photo locale reste utilisée
-           * jusqu’à sa migration dans Storage.
-           */
-          profilePhoto:
-            current.profilePhoto ?? "",
         }));
       } catch (error) {
         console.error(
           "Impossible de charger la famille depuis Supabase.",
-          error
+          error,
         );
       } finally {
-        if (active) {
-          setCloudLoading(false);
-        }
+        setCloudLoading(false);
       }
+    }, []);
+
+  useEffect(() => {
+    if (!hydrated) {
+      return;
     }
 
-    void hydrateFromCloud();
+    void refreshCloudFamily();
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(() => {
-      void hydrateFromCloud();
+      void refreshCloudFamily();
     });
 
     return () => {
-      active = false;
       subscription.unsubscribe();
     };
-  }, [hydrated]);
+  }, [hydrated, refreshCloudFamily]);
 
   /*
-   * Même affichage côté serveur et au premier rendu client.
+   * Synchronisation instantanée des changements
+   * effectués depuis un autre téléphone ou ordinateur.
    */
+  useEffect(() => {
+    if (
+      !hydrated ||
+      !cloudFamilyId ||
+      !cloudChildId
+    ) {
+      return;
+    }
+
+    const channel = supabase
+      .channel(
+        `legacy-child-${cloudChildId}`,
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "children",
+          filter: `family_id=eq.${cloudFamilyId}`,
+        },
+        () => {
+          void refreshCloudFamily();
+        },
+      )
+      .subscribe();
+
+    return () => {
+      void supabase.removeChannel(channel);
+    };
+  }, [
+    hydrated,
+    cloudFamilyId,
+    cloudChildId,
+    refreshCloudFamily,
+  ]);
+
+  /*
+   * Au retour dans l'application, on recharge Supabase.
+   * Utile sur mobile lorsque l'application a été
+   * mise en arrière-plan.
+   */
+  useEffect(() => {
+    if (!hydrated) {
+      return;
+    }
+
+    function refreshWhenVisible() {
+      if (
+        document.visibilityState === "visible"
+      ) {
+        void refreshCloudFamily();
+      }
+    }
+
+    function refreshOnFocus() {
+      void refreshCloudFamily();
+    }
+
+    document.addEventListener(
+      "visibilitychange",
+      refreshWhenVisible,
+    );
+
+    window.addEventListener(
+      "focus",
+      refreshOnFocus,
+    );
+
+    return () => {
+      document.removeEventListener(
+        "visibilitychange",
+        refreshWhenVisible,
+      );
+
+      window.removeEventListener(
+        "focus",
+        refreshOnFocus,
+      );
+    };
+  }, [hydrated, refreshCloudFamily]);
+
   if (!hydrated) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-[#F8F6F2] px-6">
@@ -180,6 +259,7 @@ export function FamilyProvider({
         cloudFamilyId,
         cloudChildId,
         cloudLoading,
+        refreshCloudFamily,
       }}
     >
       {children}
@@ -192,7 +272,7 @@ export function useFamily() {
 
   if (!context) {
     throw new Error(
-      "useFamily doit être utilisé dans FamilyProvider."
+      "useFamily doit être utilisé dans FamilyProvider.",
     );
   }
 

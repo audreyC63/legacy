@@ -9,7 +9,7 @@ type FamilyMemberRow = {
 type ChildRow = {
   id: string;
   family_id: string;
-  first_name: string;
+  first_name: string | null;
   is_born: boolean | null;
   birth_date: string | null;
   expected_birth_date: string | null;
@@ -28,14 +28,20 @@ export type CloudFamilyResult = {
   family: Partial<Family>;
 };
 
-function getPreferredFamilyId() {
+function getPreferredFamilyId(): string | null {
   if (typeof window === "undefined") {
     return null;
   }
 
   return window.localStorage.getItem(
-    "legacy-active-family-id"
+    "legacy-active-family-id",
   );
+}
+
+function valueToString(
+  value: number | null,
+): string {
+  return value === null ? "" : String(value);
 }
 
 export async function loadCloudFamily(): Promise<CloudFamilyResult | null> {
@@ -44,7 +50,11 @@ export async function loadCloudFamily(): Promise<CloudFamilyResult | null> {
     error: userError,
   } = await supabase.auth.getUser();
 
-  if (userError || !user) {
+  if (userError) {
+    throw userError;
+  }
+
+  if (!user) {
     return null;
   }
 
@@ -75,7 +85,7 @@ export async function loadCloudFamily(): Promise<CloudFamilyResult | null> {
     memberships.find(
       (membership) =>
         membership.family_id ===
-        preferredFamilyId
+        preferredFamilyId,
     ) ?? memberships[0];
 
   const familyId =
@@ -84,11 +94,11 @@ export async function loadCloudFamily(): Promise<CloudFamilyResult | null> {
   if (typeof window !== "undefined") {
     window.localStorage.setItem(
       "legacy-active-family-id",
-      familyId
+      familyId,
     );
   }
 
-  const { data: child, error: childError } =
+  const { data: childData, error: childError } =
     await supabase
       .from("children")
       .select(
@@ -106,42 +116,52 @@ export async function loadCloudFamily(): Promise<CloudFamilyResult | null> {
           blood_group,
           eye_color,
           hair_color
-        `
+        `,
       )
       .eq("family_id", familyId)
+      .order("created_at", {
+        ascending: true,
+      })
       .limit(1)
-      .maybeSingle<ChildRow>();
+      .maybeSingle();
 
   if (childError) {
     throw childError;
   }
 
-  if (!child) {
+  if (!childData) {
     return null;
   }
+
+  const child = childData as ChildRow;
+
+  /*
+   * Une date de naissance fait foi même si une ancienne
+   * ligne possède encore is_born = false ou null.
+   */
+  const isBorn =
+    child.is_born === true ||
+    Boolean(child.birth_date);
 
   return {
     familyId,
     childId: child.id,
 
     family: {
-      childName: child.first_name,
-      isBorn: child.is_born,
+      childName: child.first_name ?? "",
+      isBorn,
       birthDate: child.birth_date ?? "",
       pregnancyDate:
         child.expected_birth_date ?? "",
+      profilePhoto:
+        child.profile_photo_path ?? "",
       birthPlace: child.birth_place ?? "",
-
-      birthWeight:
-        child.birth_weight_kg === null
-          ? ""
-          : String(child.birth_weight_kg),
-
-      birthHeight:
-        child.birth_height_cm === null
-          ? ""
-          : String(child.birth_height_cm),
-
+      birthWeight: valueToString(
+        child.birth_weight_kg,
+      ),
+      birthHeight: valueToString(
+        child.birth_height_cm,
+      ),
       bloodGroup: child.blood_group ?? "",
       eyeColor: child.eye_color ?? "",
       hairColor: child.hair_color ?? "",
